@@ -32,9 +32,3 @@ else
   echo "Ruby already installed."
 
 fi
-
-echo "Installing Rake"
-gem install rake --no-rdoc --no-ri
-
-echo "Installing Shadow Puppet"
-gem install shadow_puppet --no-rdoc --no-ri

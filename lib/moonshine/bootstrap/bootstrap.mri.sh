@@ -19,6 +19,3 @@ gem update --system
 cd ..
 echo "Cleaning up RubyGems Download"
 rm -rf rubygems-1.3.1*
-
-echo "Installing Shadow Puppet"
-gem install shadow_puppet --no-rdoc --no-ri

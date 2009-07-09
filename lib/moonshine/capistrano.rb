@@ -26,6 +26,12 @@ Capistrano::Configuration.instance(:must_exist).load do
     dependencies. Called by deploy:setup.
     DESC
     task :bootstrap do
+      ruby.install
+      ensure_installed
+      setup_directories
+    end
+
+    task :setup_directories do
       begin
         config = YAML.load_file(File.join(Dir.pwd, 'config', 'moonshine.yml'))
         put(YAML.dump(config),"/tmp/moonshine.yml")
@@ -35,13 +41,17 @@ Capistrano::Configuration.instance(:must_exist).load do
         exit(0)
       end
       put(File.read(File.join(File.dirname(__FILE__), '..', 'moonshine_setup_manifest.rb')),"/tmp/moonshine_setup_manifest.rb")
-      put(File.read(File.join(File.dirname(__FILE__), 'bootstrap', "bootstrap.#{fetch(:ruby, 'ree')}.sh")),"/tmp/bootstrap.sh")
-      sudo 'chmod a+x /tmp/bootstrap.sh'
-      sudo "FORCE_RUBY=#{fetch(:force_ruby,'false')} /tmp/bootstrap.sh"
-      sudo 'rm /tmp/bootstrap.sh'
       sudo "shadow_puppet /tmp/moonshine_setup_manifest.rb"
       sudo 'rm /tmp/moonshine_setup_manifest.rb'
       sudo 'rm /tmp/moonshine.yml'
+    end
+
+    task :ensure_installed do
+      begin
+        run "ruby -e 'require \"rubygems\"; gem \"moonshine\", \"= #{Gem.loaded_specs["moonshine"].version}\"' 2> /dev/null"
+      rescue
+        sudo "gem install moonshine -v #{Gem.loaded_specs["moonshine"].version}"
+      end
     end
 
     desc 'Apply the Moonshine manifest for this application'
@@ -49,6 +59,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       on_rollback do
         run "cd #{latest_release} && RAILS_ENV=#{fetch(:rails_env, 'production')} rake --trace environment"
       end
+      ensure_installed
       sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{ENV['DEPLOY_STAGE']||fetch(:stage,'undefined')} RAILS_ENV=#{fetch(:rails_env, 'production')} shadow_puppet #{latest_release}/app/manifests/#{fetch(:moonshine_manifest, 'application_manifest')}.rb"
       sudo "touch /var/log/moonshine_rake.log && cat /var/log/moonshine_rake.log"
     end
@@ -196,8 +207,16 @@ Capistrano::Configuration.instance(:must_exist).load do
     desc "Forces a reinstall of Ruby and restarts Apache/Passenger"
     task :upgrade do
       set :force_ruby, 'true'
-      moonshine.bootstrap
+      install
       apache.restart
+    end
+
+    desc "Install Ruby + Rubygems"
+    task :install do
+      put(File.read(File.join(File.dirname(__FILE__), 'bootstrap', "bootstrap.#{fetch(:ruby, 'ree')}.sh")),"/tmp/bootstrap.sh")
+      sudo 'chmod a+x /tmp/bootstrap.sh'
+      sudo "FORCE_RUBY=#{fetch(:force_ruby,'false')} /tmp/bootstrap.sh"
+      sudo 'rm /tmp/bootstrap.sh'
     end
   end
 
