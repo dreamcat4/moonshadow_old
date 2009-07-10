@@ -4,8 +4,7 @@ require File.dirname(__FILE__) + '/../../test_helper.rb'
 #nothing else
 module Gem  #:nodoc:
   class SourceIndex  #:nodoc:
-    alias_method :orig_search, :search
-    def search(gem_pattern, platform_only = false)
+    def sparse_search(gem_pattern, platform_only = false)
       if gem_pattern.name.to_s =~ /passenger/
         orig_search(gem_pattern, platform_only)
       else
@@ -18,7 +17,15 @@ end
 class Moonshine::Manifest::RailsTest < Test::Unit::TestCase
 
   def setup
+    Gem::SourceIndex.send(:alias_method, :orig_search, :search)
+    Gem::SourceIndex.send(:alias_method, :search, :sparse_search)
+    config = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', '..', 'app_generators', 'moonshine', 'templates', 'moonshine.yml'))
     @manifest = Moonshine::Manifest::Rails.new
+    @manifest.configure(config)
+  end
+
+  def teardown
+    Gem::SourceIndex.send(:alias_method, :search, :orig_search)
   end
 
   def test_default_stack
@@ -202,8 +209,8 @@ class Moonshine::Manifest::RailsTest < Test::Unit::TestCase
     })
     @manifest.apache_server
     
-    assert_not_nil @manifest.execs.find { |n, r| r.command == 'htpasswd -b /srv/foo/shared/config/htpasswd jimbo motorcycle' }
-    assert_not_nil @manifest.execs.find { |n, r| r.command == 'htpasswd -b /srv/foo/shared/config/htpasswd joebob jimbo' }
+    assert_not_nil @manifest.execs.find { |n, r| r.command == "htpasswd -b #{@manifest.configuration[:deploy_to]}/shared/config/htpasswd jimbo motorcycle" }
+    assert_not_nil @manifest.execs.find { |n, r| r.command == "htpasswd -b #{@manifest.configuration[:deploy_to]}/shared/config/htpasswd joebob jimbo" }
     assert_not_nil @manifest.files["#{@manifest.configuration[:deploy_to]}/shared/config/htpasswd"]
   end
 

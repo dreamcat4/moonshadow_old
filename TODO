@@ -1,0 +1,2 @@
+* Use ActiveSupport::OrderedHash to prevent gems.yml from changing when it
+  really hasn't

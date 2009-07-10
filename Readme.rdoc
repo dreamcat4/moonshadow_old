@@ -6,7 +6,7 @@ Moonshine is Rails deployment and configuration management done right.
 
 ==== Requirements
 
-* A server running Ubuntu 8.10 (Want to see your favorite platform supported? 
+* A server running Ubuntu > 8.04 (Want to see your favorite platform supported?
   Fork Moonshine on GitHub!)
 * A user on this server that can:
   * Execute commands via sudo
@@ -14,26 +14,26 @@ Moonshine is Rails deployment and configuration management done right.
 
 ==== Instructions
 
-* <tt>ruby script/plugin install git://github.com/railsmachine/moonshine.git</tt>
+* <tt>sudo gem install moonshine</tt>
 * Ensure all required gems are declared using <tt>config.gem</tt> calls in
   <tt>config/environment.rb</tt>.
-* <tt>ruby script/generate moonshine</tt>
+* In the root of your Rails app, run <tt>moonshine .</tt>
 * Edit the configuration file at <tt>config/moonshine.yml</tt> with your
   apps's details. (If you're using a user other than <tt>rails</tt>, specify
   this here)
 * Edit the Moonshine::Manifest::Rails manifest generated for your application
   at <tt>app/manifests/application_manifest.rb</tt> to declare other packages,
   services, or files your application depends on (memcached, sphinx, etc).
-* <tt>capify</tt> your application
-  * Your <tt>config/deploy.rb</tt> can be super barebones, as Moonshine loads
-    the contents of <tt>config/moonshine.yml</tt> in as Cap variables and sets
-    some sane defaults. Here's what I use:
+* Your <tt>config/deploy.rb</tt> can be super barebones, as Moonshine loads
+  the contents of <tt>config/moonshine.yml</tt> in as Cap variables and sets
+  some sane defaults. Here's what I use:
 
-     server "myubuntuserver.com", :app, :web, :db, :primary => true
+   server "myubuntuserver.com", :app, :web, :db, :primary => true
 
 * <tt>git add . && git commit -am "added moonshine" && git push</tt>
 * <tt>cap deploy:setup</tt>
-  * This will bootstrap your Ubuntu server with Ruby Enterprise Edition.
+  * This will bootstrap your Ubuntu server with Ruby Enterprise Edition, 
+    and install the moonshine gem on the server.
 * <tt>cap deploy</tt>
   * This will install all needed dependencies for your application and deploy
     it for the first time. The initial deploy will take awhile, as things such
@@ -74,17 +74,6 @@ following line to your config/deploy.rb:
 This file will then be automatically uploaded and symlinked to
 <tt>current/config/database.yml</tt> on each deploy. 
 
-=== Running Tests
-
-To run the test suite, follow these steps to create a testbed app:
-
-    rails moonshine_tests
-    cd moonshine_tests
-    git clone git://github.com/railsmachine/moonshine.git /vendor/plugins/moonshine
-    script/generate moonshine
-    cd vendor/plugins/moonshine
-    rake test
-    
 === Getting Help
 
 You can find more examples in the documentation[http://railsmachine.github.com/moonshine] and on the Wiki[http://wiki.github.com/railsmachine/moonshine].

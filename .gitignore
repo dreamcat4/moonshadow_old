@@ -4,3 +4,4 @@ rdoc
 doc
 coverage
 .autotest
+test/tmp

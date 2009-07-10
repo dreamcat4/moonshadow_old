@@ -1,4 +1,5 @@
-require "#{File.dirname(__FILE__)}/../../vendor/plugins/moonshine/lib/moonshine.rb"
+<%= moonshine_gem_string %>
+require 'moonshine'
 class <%= klass_name %> < Moonshine::Manifest::Rails
   # The majority of your configuration should be in <tt>config/moonshine.yml</tt>
   # If necessary, you may provide extra configuration directly in this class 

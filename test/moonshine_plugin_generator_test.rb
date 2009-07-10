@@ -1,52 +1,47 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
-require 'rails_generator'
-require 'rails_generator/scripts/generate'
+require File.join(File.dirname(__FILE__), "test_helper.rb")
 
 class MoonshinePluginGeneratorTest < Test::Unit::TestCase
+  include RubiGen::GeneratorTestHelper
 
   def setup
-    FileUtils.mkdir_p(fake_rails_root)
-    @original_files = file_list
-    Rails::Generator::Scripts::Generate.new.run(["moonshine_plugin","iptables"], :destination => fake_rails_root)
-    @new_files = (file_list - @original_files)
+    bare_setup
+    run_generator('moonshine_plugin', ['iptables'], sources)
   end
 
   def teardown
-    FileUtils.rm_r(fake_rails_root)
+    bare_teardown
   end
 
   def test_generates_correct_files
-    assert @new_files.include?(init_path)
-    assert @new_files.include?(module_path)
+    assert_file_exists init_path
+    assert_file_exists module_path
   end
 
   def test_generates_plugin_module
-    assert_match /module Iptables/, File.read(module_path)
+    assert_match /module Iptables/, File.read("#{APP_ROOT}/"+module_path)
   end
   
   def test_includes_plugin_module
-    assert_match /require ".*iptables\.rb"/,File.read(init_path)
-    assert_match /include Iptables/, File.read(init_path)
+    assert_match /require ".*iptables\.rb"/,File.read("#{APP_ROOT}/"+init_path)
+    assert_match /include Iptables/, File.read("#{APP_ROOT}/"+init_path)
   end
 
   private
 
     def module_path
-      './test/rails_root/vendor/plugins/moonshine_iptables/lib/iptables.rb'
+      'vendor/plugins/moonshine_iptables/lib/iptables.rb'
     end
 
     def init_path
-      './test/rails_root/vendor/plugins/moonshine_iptables/moonshine/init.rb'
+      'vendor/plugins/moonshine_iptables/moonshine/init.rb'
     end
 
-    def fake_rails_root
-      File.join(File.dirname(__FILE__), 'rails_root')
+    def sources
+      [RubiGen::PathSource.new(:test, File.join(File.dirname(__FILE__),"..", generator_path))]
     end
 
-    def file_list
-      Dir.glob(File.join(fake_rails_root, "vendor/plugins/moonshine_iptables/*")) + 
-      Dir.glob(File.join(fake_rails_root, "vendor/plugins/moonshine_iptables/moonshine/*")) + 
-      Dir.glob(File.join(fake_rails_root, "vendor/plugins/moonshine_iptables/lib/*"))
+    def generator_path
+      "app_generators"
     end
 
 end

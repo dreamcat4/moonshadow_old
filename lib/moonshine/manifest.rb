@@ -133,12 +133,19 @@ class Moonshine::Manifest < ShadowPuppet::Manifest
     ERB.new(template_contents).result(b)
   end
 
-  # config/moonshine.yml
-  configure(YAML::load(ERB.new(IO.read(File.join(rails_root, 'config', 'moonshine.yml'))).result))
+  def self.initial_configuration
+    # config/moonshine.yml
+    moonshine_yml = IO.read(File.join(rails_root, 'config', 'moonshine.yml')) rescue nil
+    configure(YAML::load(ERB.new(moonshine_yml).result)) if moonshine_yml
 
-  # database config
-  configure(:database => YAML::load(ERB.new(IO.read(File.join(rails_root, 'config', 'database.yml'))).result))
+    # database config
+    database_yml = IO.read(File.join(rails_root, 'config', 'database.yml')) rescue nil
+    configure(:database => YAML::load(ERB.new(database_yml).result)) if database_yml
 
-  # gems
-  configure(:gems => (YAML.load_file(File.join(rails_root, 'config', 'gems.yml')) rescue nil))
+    # gems
+    configure(:gems => (YAML.load_file(File.join(rails_root, 'config', 'gems.yml')) rescue nil))
+  end
+
+  initial_configuration
+
 end

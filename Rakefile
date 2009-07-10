@@ -16,9 +16,9 @@ task :default => :test
 
 desc 'Test the moonshine plugin.'
 Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
+  t.test_files = FileList.new('test/**/*_test.rb') do |fl|
+    fl.exclude(/tmp\/moonshine/)
+  end
   t.verbose = true
 end
 
@@ -33,20 +33,22 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.options << '--webcvs=http://github.com/railsmachine/moonshine/tree/master/'
 end
 
-task :build => :cleanup do
-  system "gem build *.gemspec"
-end
-
-task :install => :build do
-  system "sudo gem install *.gem"
-end
-
-task :uninstall do
-  system "sudo gem uninstall *.gem"
-end
-
-task :cleanup do
-  system "rm *.gem"
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = "moonshine"
+    gemspec.description = gemspec.summary = "Rails deployment and configuration management done right. ShadowPuppet + Capistrano == crazy delicious"
+    gemspec.email = "jesse@railsmachine.com"
+    gemspec.homepage = "http://railsmachine.github.com/moonshine/"
+    gemspec.authors = ["Jesse Newland", "Rob Lingle"]
+    gemspec.files = FileList.new('lib/**/*', 'bin/**/*', 'app_generators/**/*')
+    gemspec.test_files = []
+    gemspec.add_dependency('shadow_puppet', '>= 0.3.1')
+    gemspec.add_dependency('rake', '>= 0.8.7')
+    gemspec.add_dependency('rubigen', '>= 1.5.2')
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install jeweler"
 end
 
 task :pull do

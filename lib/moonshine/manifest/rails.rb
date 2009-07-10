@@ -1,5 +1,5 @@
 #The Rails Manifest includes recipes for Apache, Mysql, Sqlite3 and Rails
-#running on Ubuntu 8.10 or greater.
+#running on Ubuntu 8.04 or greater.
 class Moonshine::Manifest::Rails < Moonshine::Manifest
   def validate_platform
     unless Facter.lsbdistid == 'Ubuntu' && Facter.lsbdistrelease.to_f >= 8.04

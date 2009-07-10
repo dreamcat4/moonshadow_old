@@ -1,19 +1,20 @@
-class MoonshinePluginGenerator < Rails::Generator::Base
+class MoonshinePluginGenerator < RubiGen::Base
   attr_reader :name, :plugin_name, :module_name
 
   def initialize(runtime_args, runtime_options = {})
-    plugin = runtime_args.shift
+    super
+    usage if args.empty?
+    plugin = args.shift
     if plugin
       @name = plugin.downcase.underscore
       @module_name = @name.camelize
       @plugin_name = 'moonshine_' + name
     else
       puts "Please specify the name of your plugin"
-      puts "script/generate moonshine_plugin <name>"
+      puts "moonshine_plugin <name>"
       puts
       exit
     end
-    super
   end
 
   def manifest
@@ -29,5 +30,10 @@ class MoonshinePluginGenerator < Rails::Generator::Base
       m.template  'spec_helper.rb', "vendor/plugins/#{plugin_name}/spec/spec_helper.rb"
     end
   end
-  
+
+  # Override with your own usage banner.
+  def banner
+    "Usage: #{$0} <plugin name> [options]"
+  end
+
 end
