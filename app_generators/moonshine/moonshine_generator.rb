@@ -1,29 +1,68 @@
 require 'tempfile'
 class MoonshineGenerator < RubiGen::Base
-  attr_reader :file_name, :klass_name, :rails, :moonshine_version
+  attr_reader :file_name, :klass_name, :is_rails_app, :moonshine_version
 
   def initialize(runtime_args, runtime_options = {})
     super
     @destination_root = args.shift
     @file_name = "application_manifest"
     @klass_name = @file_name.classify
-    detect_rails
+    @is_rails_app = detect_rails
     gem 'moonshine'
     @moonshine_version = Gem.loaded_specs["moonshine"].version.to_s
+  end
+
+  # Override with your own usage banner.
+  def banner
+    "Usage: #{$0} <path> [options]"
+  end
+
+  def manifest
+    recorded_session = record do |m|
+      directories(m)
+      m.template  'readme.templates', 'app/manifests/templates/README'
+      m.template  'Capfile', 'Capfile'
+      m.template  "#{application_type}/moonshine.yml", "config/moonshine.yml"
+      m.template  "#{application_type}/moonshine.rake", 'lib/tasks/moonshine.rake'
+      m.template  'rails/gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if is_rails_app
+      generate_or_upgrade_manifest(m)
+      generate_or_upgrade_deploy(m)
+    end
+    intro
+    recorded_session
+  end
+
+protected
+
+  def intro
+    intro = <<-INTRO
+
+After the Moonshine generator finishes don't forget to:
+
+- Edit config/moonshine.yml
+Use this file to manage configuration related to deploying and running the app: 
+domain name, git repos, package dependencies for gems, and more.
+
+- Edit app/manifests/#{file_name}.rb
+Use this to manage the configuration of everything else on the server:
+define the server 'stack', cron jobs, mail aliases, configuration files 
+
+    INTRO
+    puts intro if File.basename($0) == 'generate'
   end
 
   def detect_rails
     begin
       require File.expand_path(File.join(destination_root, 'config/environment.rb'))
     rescue LoadError
-      @rails = false
+      false
     else
-      @rails = true
+      true
     end
   end
 
-  def rails?
-    @rails
+  def application_type
+    is_rails_app ? 'rails' : 'standalone'
   end
 
   def gems
@@ -43,65 +82,45 @@ class MoonshineGenerator < RubiGen::Base
     gem_array
   end
 
-  def manifest
-    recorded_session = record do |m|
-      m.directory 'app/manifests'
-      m.directory 'app/manifests/templates'
+  def directories(m)
+    m.directory 'app'
+    m.directory 'app/manifests'
+    m.directory 'app/manifests/templates'
+    m.directory 'config'
+    m.directory 'lib'
+    m.directory 'lib/tasks'
+  end
 
-      #generate or upgrade app/manifests/#{file_name}.rb
-      if File.exists?(destination_path("app/manifests/#{file_name}.rb"))
-        if File.read(destination_path("app/manifests/#{file_name}.rb")) =~ /vendor\/plugins\/moonshine/
-          gsub_file "app/manifests/#{file_name}.rb", /^.*vendor\/plugins\/moonshine.*$/mi do |match|
-            "#{moonshine_gem_string}\nrequire 'moonshine'\n"
-          end
-        else
-          gsub_file "app/manifests/#{file_name}.rb", /^gem 'moonshine'.*$/mi do |match|
-            moonshine_gem_string
-          end
+  #generate or upgrade app/manifests/#{file_name}.rb
+  def generate_or_upgrade_manifest(m)
+    if File.exists?(destination_path("app/manifests/#{file_name}.rb"))
+      if File.read(destination_path("app/manifests/#{file_name}.rb")) =~ /vendor\/plugins\/moonshine/
+        gsub_file "app/manifests/#{file_name}.rb", /^.*vendor\/plugins\/moonshine.*$/mi do |match|
+          "#{moonshine_gem_string}\nrequire 'moonshine'\n"
         end
       else
-        m.template  'moonshine.rb', "app/manifests/#{file_name}.rb", :assigns => { :moonshine_gem_string => moonshine_gem_string }
-      end
-
-      m.directory 'app/manifests/templates'
-      m.template  'readme.templates', 'app/manifests/templates/README'
-      m.directory 'config'
-      m.template  'moonshine.yml', "config/moonshine.yml"
-      m.template  'gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if rails?
-      m.directory 'lib/tasks'
-      m.template  'moonshine.rake', 'lib/tasks/moonshine.rake' if rails?
-      m.template  'Capfile', 'Capfile'
-
-      #generate or upgrade config/deploy.rb
-      if File.exists?(destination_path('config/deploy.rb'))
-        if File.read(destination_path('config/deploy.rb')) =~ /moonshine\/capistrano/
-          gsub_file 'config/deploy.rb', /^gem 'moonshine'.*$/mi do |match|
-            moonshine_gem_string
-          end
-        else
-          File.prepend(destination_path('config/deploy.rb'), "#{moonshine_gem_string}\nrequire 'moonshine/capistrano'\n")
+        gsub_file "app/manifests/#{file_name}.rb", /^gem 'moonshine'.*$/mi do |match|
+          moonshine_gem_string
         end
-      else
-        m.template  'deploy.rb', 'config/deploy.rb', :assigns => { :moonshine_gem_string => moonshine_gem_string }
       end
+    else
+      m.template  "#{application_type}/manifest.rb", "app/manifests/#{file_name}.rb", :assigns => { :moonshine_gem_string => moonshine_gem_string }
     end
-    
-    intro = <<-INTRO
-    
-After the Moonshine generator finishes don't forget to:
+  end
 
-- Edit config/moonshine.yml
-Use this file to manage configuration related to deploying and running the app: 
-domain name, git repos, package dependencies for gems, and more.
-
-- Edit app/manifests/#{file_name}.rb
-Use this to manage the configuration of everything else on the server:
-define the server 'stack', cron jobs, mail aliases, configuration files 
-
-    INTRO
-    puts intro if File.basename($0) == 'generate'
-    
-    recorded_session
+  #generate or upgrade config/deploy.rb
+  def generate_or_upgrade_deploy(m)
+    if File.exists?(destination_path('config/deploy.rb'))
+      if File.read(destination_path('config/deploy.rb')) =~ /moonshine\/capistrano/
+        gsub_file 'config/deploy.rb', /^gem 'moonshine'.*$/mi do |match|
+          moonshine_gem_string
+        end
+      else
+        File.prepend(destination_path('config/deploy.rb'), "#{moonshine_gem_string}\nrequire 'moonshine/capistrano'\n")
+      end
+    else
+      m.template  "#{application_type}/deploy.rb", 'config/deploy.rb', :assigns => { :moonshine_gem_string => moonshine_gem_string }
+    end
   end
 
   def moonshine_gem_string
@@ -112,11 +131,6 @@ define the server 'stack', cron jobs, mail aliases, configuration files
     path = destination_path(relative_destination)
     content = File.read(path).gsub(regexp, *args, &block)
     File.open(path, 'wb') { |file| file.write(content) }
-  end
-
-  # Override with your own usage banner.
-  def banner
-    "Usage: #{$0} <path> [options]"
   end
 
 end
