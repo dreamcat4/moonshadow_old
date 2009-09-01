@@ -1,4 +1,4 @@
-class MoonshinePluginGenerator < RubiGen::Base
+class MoonshadowPluginGenerator < RubiGen::Base
   attr_reader :name, :plugin_name, :module_name
 
   def initialize(runtime_args, runtime_options = {})
@@ -8,10 +8,10 @@ class MoonshinePluginGenerator < RubiGen::Base
     if plugin
       @name = plugin.downcase.underscore
       @module_name = @name.camelize
-      @plugin_name = 'moonshine_' + name
+      @plugin_name = 'moonshadow_' + name
     else
       puts "Please specify the name of your plugin"
-      puts "moonshine_plugin <name>"
+      puts "moonshadow_plugin <name>"
       puts
       exit
     end
@@ -21,8 +21,8 @@ class MoonshinePluginGenerator < RubiGen::Base
     record do |m|
       m.directory "vendor/plugins/#{plugin_name}"
       m.template  "README.rdoc", "vendor/plugins/#{plugin_name}/README.rdoc"
-      m.directory "vendor/plugins/#{plugin_name}/moonshine"
-      m.template  'init.rb', "vendor/plugins/#{plugin_name}/moonshine/init.rb"
+      m.directory "vendor/plugins/#{plugin_name}/moonshadow"
+      m.template  'init.rb', "vendor/plugins/#{plugin_name}/moonshadow/init.rb"
       m.directory "vendor/plugins/#{plugin_name}/lib"
       m.template  'plugin.rb', "vendor/plugins/#{plugin_name}/lib/#{name}.rb"
       m.directory "vendor/plugins/#{plugin_name}/spec"

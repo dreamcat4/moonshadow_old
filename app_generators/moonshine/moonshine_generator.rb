@@ -1,15 +1,15 @@
 require 'tempfile'
-class MoonshineGenerator < RubiGen::Base
-  attr_reader :file_name, :klass_name, :is_rails_app, :moonshine_version
+class MoonshadowGenerator < RubiGen::Base
+  attr_reader :file_name, :klass_name, :is_rails_app, :moonshadow_version
 
   def initialize(runtime_args, runtime_options = {})
     super
-    @destination_root = args.shift
+    @destination_root = args.shift || "."
     @file_name = "application_manifest"
     @klass_name = @file_name.classify
     @is_rails_app = detect_rails
-    gem 'moonshine'
-    @moonshine_version = Gem.loaded_specs["moonshine"].version.to_s
+    gem 'moonshadow'
+    @moonshadow_version = Gem.loaded_specs["moonshadow"].version.to_s
   end
 
   # Override with your own usage banner.
@@ -22,8 +22,8 @@ class MoonshineGenerator < RubiGen::Base
       directories(m)
       m.template  'readme.templates', 'app/manifests/templates/README'
       m.template  'Capfile', 'Capfile'
-      m.template  "#{application_type}/moonshine.yml", "config/moonshine.yml"
-      m.template  "#{application_type}/moonshine.rake", 'lib/tasks/moonshine.rake'
+      m.template  "#{application_type}/moonshadow.yml", "config/moonshadow.yml"
+      m.template  "#{application_type}/moonshadow.rake", 'lib/tasks/moonshadow.rake'
       m.template  'rails/gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if is_rails_app
       generate_or_upgrade_manifest(m)
       generate_or_upgrade_deploy(m)
@@ -37,9 +37,9 @@ protected
   def intro
     intro = <<-INTRO
 
-After the Moonshine generator finishes don't forget to:
+After the Moonshadow generator finishes don't forget to:
 
-- Edit config/moonshine.yml
+- Edit config/moonshadow.yml
 Use this file to manage configuration related to deploying and running the app: 
 domain name, git repos, package dependencies for gems, and more.
 
@@ -94,37 +94,37 @@ define the server 'stack', cron jobs, mail aliases, configuration files
   #generate or upgrade app/manifests/#{file_name}.rb
   def generate_or_upgrade_manifest(m)
     if File.exists?(destination_path("app/manifests/#{file_name}.rb"))
-      if File.read(destination_path("app/manifests/#{file_name}.rb")) =~ /vendor\/plugins\/moonshine/
-        gsub_file "app/manifests/#{file_name}.rb", /^.*vendor\/plugins\/moonshine.*$/mi do |match|
-          "#{moonshine_gem_string}\nrequire 'moonshine'\n"
+      if File.read(destination_path("app/manifests/#{file_name}.rb")) =~ /vendor\/plugins\/moonshadow/
+        gsub_file "app/manifests/#{file_name}.rb", /^.*vendor\/plugins\/moonshadow.*$/mi do |match|
+          "#{moonshadow_gem_string}\nrequire 'moonshadow'\n"
         end
       else
-        gsub_file "app/manifests/#{file_name}.rb", /^gem 'moonshine'.*$/mi do |match|
-          moonshine_gem_string
+        gsub_file "app/manifests/#{file_name}.rb", /^gem 'moonshadow'.*$/mi do |match|
+          moonshadow_gem_string
         end
       end
     else
-      m.template  "#{application_type}/manifest.rb", "app/manifests/#{file_name}.rb", :assigns => { :moonshine_gem_string => moonshine_gem_string }
+      m.template  "#{application_type}/manifest.rb", "app/manifests/#{file_name}.rb", :assigns => { :moonshadow_gem_string => moonshadow_gem_string }
     end
   end
 
   #generate or upgrade config/deploy.rb
   def generate_or_upgrade_deploy(m)
     if File.exists?(destination_path('config/deploy.rb'))
-      if File.read(destination_path('config/deploy.rb')) =~ /moonshine\/capistrano/
-        gsub_file 'config/deploy.rb', /^gem 'moonshine'.*$/mi do |match|
-          moonshine_gem_string
+      if File.read(destination_path('config/deploy.rb')) =~ /moonshadow\/capistrano/
+        gsub_file 'config/deploy.rb', /^gem 'moonshadow'.*$/mi do |match|
+          moonshadow_gem_string
         end
       else
-        File.prepend(destination_path('config/deploy.rb'), "#{moonshine_gem_string}\nrequire 'moonshine/capistrano'\n")
+        File.prepend(destination_path('config/deploy.rb'), "#{moonshadow_gem_string}\nrequire 'moonshadow/capistrano'\n")
       end
     else
-      m.template  "#{application_type}/deploy.rb", 'config/deploy.rb', :assigns => { :moonshine_gem_string => moonshine_gem_string }
+      m.template  "#{application_type}/deploy.rb", 'config/deploy.rb', :assigns => { :moonshadow_gem_string => moonshadow_gem_string }
     end
   end
 
-  def moonshine_gem_string
-    "gem 'moonshine', '= #{moonshine_version}'"
+  def moonshadow_gem_string
+    "gem 'moonshadow', '= #{moonshadow_version}'"
   end
 
   def gsub_file(relative_destination, regexp, *args, &block)

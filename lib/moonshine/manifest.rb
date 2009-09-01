@@ -1,10 +1,10 @@
-# This is the base Moonshine Manifest class, which provides a simple system
-# for loading moonshine recpies from plugins, a template helper, and parses
+# This is the base Moonshadow Manifest class, which provides a simple system
+# for loading moonshadow recpies from plugins, a template helper, and parses
 # several configuration files:
 #
-#   config/moonshine.yml
+#   config/moonshadow.yml
 #
-# The contents of <tt>config/moonshine.yml</tt> are expected to serialize into
+# The contents of <tt>config/moonshadow.yml</tt> are expected to serialize into
 # a hash, and are loaded into the manifest's Configatron::Store.
 #
 #   config/database.yml
@@ -13,14 +13,14 @@
 # <tt>configuration[:database]</tt>.
 #
 # If you'd like to create another 'default rails stack' using other tools that
-# what Moonshine::Manifest::Rails uses, subclass this and go nuts.
-class Moonshine::Manifest < ShadowPuppet::Manifest
-  # Load a Moonshine Plugin
+# what Moonshadow::Manifest::Rails uses, subclass this and go nuts.
+class Moonshadow::Manifest < ShadowPuppet::Manifest
+  # Load a Moonshadow Plugin
   #
-  #   class MyManifest < Moonshine::Manifest
+  #   class MyManifest < Moonshadow::Manifest
   #
-  #     # Evals vendor/plugins/moonshine_my_app/moonshine/init.rb
-  #     plugin :moonshine_my_app
+  #     # Evals vendor/plugins/moonshadow_my_app/moonshadow/init.rb
+  #     plugin :moonshadow_my_app
   #
   #     # Evals lib/my_recipe.rb
   #     plugin 'lib/my_recipe.rb'
@@ -29,7 +29,7 @@ class Moonshine::Manifest < ShadowPuppet::Manifest
   #   end
   def self.plugin(name = nil)
     if name.is_a?(Symbol)
-      path = File.join(rails_root, 'vendor', 'plugins', 'moonshine_' + name.to_s, 'moonshine', 'init.rb')
+      path = File.join(rails_root, 'vendor', 'plugins', 'moonshadow_' + name.to_s, 'moonshadow', 'init.rb')
     else
       path = name
     end
@@ -134,9 +134,9 @@ class Moonshine::Manifest < ShadowPuppet::Manifest
   end
 
   def self.initial_configuration
-    # config/moonshine.yml
-    moonshine_yml = IO.read(File.join(rails_root, 'config', 'moonshine.yml')) rescue nil
-    configure(YAML::load(ERB.new(moonshine_yml).result)) if moonshine_yml
+    # config/moonshadow.yml
+    moonshadow_yml = IO.read(File.join(rails_root, 'config', 'moonshadow.yml')) rescue nil
+    configure(YAML::load(ERB.new(moonshadow_yml).result)) if moonshadow_yml
 
     # database config
     database_yml = IO.read(File.join(rails_root, 'config', 'database.yml')) rescue nil

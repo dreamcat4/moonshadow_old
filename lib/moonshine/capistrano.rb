@@ -10,19 +10,19 @@ Capistrano::Configuration.instance(:must_exist).load do
 
   after 'deploy:restart', 'deploy:cleanup'
 
-  #load the moonshine configuration into
+  #load the moonshadow configuration into
   require 'yaml'
-  hash = YAML.load_file(File.join((ENV['RAILS_ROOT'] || Dir.pwd), 'config', 'moonshine.yml'))
+  hash = YAML.load_file(File.join((ENV['RAILS_ROOT'] || Dir.pwd), 'config', 'moonshadow.yml'))
   hash.each do |key, value|
     set(key.to_sym, value)
   end
 
   set :scm, :svn if !! repository =~ /^svn/
 
-  namespace :moonshine do
+  namespace :moonshadow do
 
     desc <<-DESC
-    Bootstrap a barebones Ubuntu system with Git, Ruby, RubyGems, and Moonshine
+    Bootstrap a barebones Ubuntu system with Git, Ruby, RubyGems, and Moonshadow
     dependencies. Called by deploy:setup.
     DESC
     task :bootstrap do
@@ -33,47 +33,47 @@ Capistrano::Configuration.instance(:must_exist).load do
 
     task :setup_directories do
       begin
-        config = YAML.load_file(File.join(Dir.pwd, 'config', 'moonshine.yml'))
-        put(YAML.dump(config),"/tmp/moonshine.yml")
+        config = YAML.load_file(File.join(Dir.pwd, 'config', 'moonshadow.yml'))
+        put(YAML.dump(config),"/tmp/moonshadow.yml")
       rescue Exception => e
         puts e
-        puts "Please make sure the settings in moonshine.yml are valid and that the target hostname is correct."
+        puts "Please make sure the settings in moonshadow.yml are valid and that the target hostname is correct."
         exit(0)
       end
-      put(File.read(File.join(File.dirname(__FILE__), '..', 'moonshine_setup_manifest.rb')),"/tmp/moonshine_setup_manifest.rb")
-      sudo "shadow_puppet /tmp/moonshine_setup_manifest.rb"
-      sudo 'rm /tmp/moonshine_setup_manifest.rb'
-      sudo 'rm /tmp/moonshine.yml'
+      put(File.read(File.join(File.dirname(__FILE__), '..', 'moonshadow_setup_manifest.rb')),"/tmp/moonshadow_setup_manifest.rb")
+      sudo "shadow_puppet /tmp/moonshadow_setup_manifest.rb"
+      sudo 'rm /tmp/moonshadow_setup_manifest.rb'
+      sudo 'rm /tmp/moonshadow.yml'
     end
 
     task :ensure_installed do
       begin
-        run "ruby -e 'require \"rubygems\"; gem \"moonshine\", \"= #{Gem.loaded_specs["moonshine"].version}\"' 2> /dev/null"
+        run "ruby -e 'require \"rubygems\"; gem \"moonshadow\", \"= #{Gem.loaded_specs["moonshadow"].version}\"' 2> /dev/null"
       rescue
-        sudo "gem install moonshine -v #{Gem.loaded_specs["moonshine"].version}"
+        sudo "gem install moonshadow -v #{Gem.loaded_specs["moonshadow"].version}"
       end
     end
 
-    desc 'Apply the Moonshine manifest for this application'
+    desc 'Apply the Moonshadow manifest for this application'
     task :apply do
       on_rollback do
         run "cd #{latest_release} && RAILS_ENV=#{fetch(:rails_env, 'production')} rake --trace environment"
       end
       ensure_installed
-      sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{ENV['DEPLOY_STAGE']||fetch(:stage,'undefined')} RAILS_ENV=#{fetch(:rails_env, 'production')} shadow_puppet #{latest_release}/app/manifests/#{fetch(:moonshine_manifest, 'application_manifest')}.rb"
-      sudo "touch /var/log/moonshine_rake.log && cat /var/log/moonshine_rake.log"
+      sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{ENV['DEPLOY_STAGE']||fetch(:stage,'undefined')} RAILS_ENV=#{fetch(:rails_env, 'production')} shadow_puppet #{latest_release}/app/manifests/#{fetch(:moonshadow_manifest, 'application_manifest')}.rb"
+      sudo "touch /var/log/moonshadow_rake.log && cat /var/log/moonshadow_rake.log"
     end
 
     desc "Update code and then run a console. Useful for debugging deployment."
     task :update_and_console do
-      set :moonshine_apply, false
+      set :moonshadow_apply, false
       deploy.update_code
       app.console
     end
 
     desc "Update code and then run 'rake environment'. Useful for debugging deployment."
     task :update_and_rake do
-      set :moonshine_apply, false
+      set :moonshadow_apply, false
       deploy.update_code
       run "cd #{latest_release} && RAILS_ENV=#{fetch(:rails_env, 'production')} rake --trace environment"
     end
@@ -85,7 +85,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
 
     before 'deploy:symlink' do
-      apply if fetch(:moonshine_apply, true) == true
+      apply if fetch(:moonshadow_apply, true) == true
     end
 
   end
@@ -198,7 +198,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       will not destroy any deployed revisions or data.
     DESC
     task :setup, :except => { :no_release => true } do
-      moonshine.bootstrap
+      moonshadow.bootstrap
       vcs.install
     end
   end

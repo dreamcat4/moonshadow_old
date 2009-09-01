@@ -1,8 +1,8 @@
 Description:
-    Generate a Moonshine plugin to provide new, reusable functionality in your manifest.
+    Generate a Moonshadow plugin to provide new, reusable functionality in your manifest.
 
 Example:
-    moonshine_plugin iptables
+    moonshadow_plugin iptables
 
     This will create the plugin structure at:
-        vendor/plugins/moonshine_iptables
+        vendor/plugins/moonshadow_iptables

@@ -1,9 +1,9 @@
-module Moonshine::Manifest::Rails::Mysql
+module Moonshadow::Manifest::Rails::Mysql
 
   # Installs <tt>mysql-server</tt> from apt and enables the <tt>mysql</tt>
   # service. Also creates a configuration file at
-  # <tt>/etc/mysql/conf.d/moonshine.cnf</tt>. See
-  # <tt>templates/moonshine.cnf</tt> for configuration options.
+  # <tt>/etc/mysql/conf.d/moonshadow.cnf</tt>. See
+  # <tt>templates/moonshadow.cnf</tt> for configuration options.
   def mysql_server
     package 'mysql-server', :ensure => :installed
     service 'mysql', :ensure => :running, :require => [
@@ -18,9 +18,9 @@ module Moonshine::Manifest::Rails::Mysql
       :ensure => :present,
       :content => template(File.join(File.dirname(__FILE__), 'templates', 'innodb.cnf.erb')),
       :before => package('mysql-server')
-    file '/etc/mysql/conf.d/moonshine.cnf',
+    file '/etc/mysql/conf.d/moonshadow.cnf',
       :ensure => :present,
-      :content => template(File.join(File.dirname(__FILE__), 'templates', 'moonshine.cnf.erb')),
+      :content => template(File.join(File.dirname(__FILE__), 'templates', 'moonshadow.cnf.erb')),
       :require => package('mysql-server'),
       :notify => service('mysql')
     file '/etc/logrotate.d/varlogmysql.conf', :ensure => :absent

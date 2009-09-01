@@ -14,23 +14,23 @@ end
 desc 'Default: run unit tests.'
 task :default => :test
 
-desc 'Test the moonshine plugin.'
+desc 'Test the moonshadow plugin.'
 Rake::TestTask.new(:test) do |t|
   t.test_files = FileList.new('test/**/*_test.rb') do |fl|
-    fl.exclude(/tmp\/moonshine/)
+    fl.exclude(/tmp\/moonshadow/)
   end
   t.verbose = true
 end
 
-desc 'Generate documentation for the moonshine plugin.'
+desc 'Generate documentation for the moonshadow plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'doc'
-  rdoc.title    = 'Moonshine'
+  rdoc.title    = 'Moonshadow'
   rdoc.options << '--line-numbers' << '--inline-source'
   rdoc.rdoc_files.include('README.rdoc')
   rdoc.rdoc_files.include('lib/**/*.rb')
   rdoc.main = "README.rdoc"
-  rdoc.options << '--webcvs=http://github.com/railsmachine/moonshine/tree/master/'
+  rdoc.options << '--webcvs=http://github.com/railsmachine/moonshadow/tree/master/'
 end
 
 begin

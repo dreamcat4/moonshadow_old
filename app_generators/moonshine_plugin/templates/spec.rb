@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 
-class <%= module_name %>Manifest < Moonshine::Manifest
+class <%= module_name %>Manifest < Moonshadow::Manifest
   plugin :<%= name %>
 end
 

@@ -1,14 +1,14 @@
 #The Rails Manifest includes recipes for Apache, Mysql, Sqlite3 and Rails
 #running on Ubuntu 8.04 or greater.
-class Moonshine::Manifest::Rails < Moonshine::Manifest
+class Moonshadow::Manifest::Rails < Moonshadow::Manifest
   def validate_platform
     unless Facter.lsbdistid == 'Ubuntu' && Facter.lsbdistrelease.to_f >= 8.04
       error = <<-ERROR
 
 
-      Moonshine::Manifest::Rails is currently only supported on Ubuntu 8.04
+      Moonshadow::Manifest::Rails is currently only supported on Ubuntu 8.04
       or greater. If you'd like to see your favorite distro supported, fork
-      Moonshine on GitHub!
+      Moonshadow on GitHub!
       ERROR
       raise NotImplementedError, error
     end
@@ -18,19 +18,19 @@ class Moonshine::Manifest::Rails < Moonshine::Manifest
   configure(:apt_gems => YAML.load_file(File.join(File.dirname(__FILE__), 'rails', 'apt_gems.yml')))
 
   require File.join(File.dirname(__FILE__), 'rails', 'passenger.rb')
-  include Moonshine::Manifest::Rails::Passenger
+  include Moonshadow::Manifest::Rails::Passenger
   require File.join(File.dirname(__FILE__), 'rails', 'mysql.rb')
-  include Moonshine::Manifest::Rails::Mysql
+  include Moonshadow::Manifest::Rails::Mysql
   require File.join(File.dirname(__FILE__), 'rails', 'postgresql.rb')
-  include Moonshine::Manifest::Rails::Postgresql
+  include Moonshadow::Manifest::Rails::Postgresql
   require File.join(File.dirname(__FILE__), 'rails', 'sqlite3.rb')
-  include Moonshine::Manifest::Rails::Sqlite3
+  include Moonshadow::Manifest::Rails::Sqlite3
   require File.join(File.dirname(__FILE__), 'rails', 'apache.rb')
-  include Moonshine::Manifest::Rails::Apache
+  include Moonshadow::Manifest::Rails::Apache
   require File.join(File.dirname(__FILE__), 'rails', 'rails.rb')
-  include Moonshine::Manifest::Rails::Rails
+  include Moonshadow::Manifest::Rails::Rails
   require File.join(File.dirname(__FILE__), 'rails', 'os.rb')
-  include Moonshine::Manifest::Rails::Os
+  include Moonshadow::Manifest::Rails::Os
 
   # A super recipe for installing Apache, Passenger, a database, 
   # Rails, NTP, Cron, Postfix. To customize your stack, call the

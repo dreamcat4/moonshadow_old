@@ -1,14 +1,14 @@
-# Running <tt>cap deploy:setup</tt> or <tt>cap moonshine:bootstrap</tt>
-# in uploads your <p>config/moonshine.yml</p> to <tt>/tmp/moonshine.yml</tt>
+# Running <tt>cap deploy:setup</tt> or <tt>cap moonshadow:bootstrap</tt>
+# in uploads your <p>config/moonshadow.yml</p> to <tt>/tmp/moonshadow.yml</tt>
 # on your server and applies this manifest.
 #
-# Requires these three variables in a YAML <tt>config/moonshine.yml</tt>:
+# Requires these three variables in a YAML <tt>config/moonshadow.yml</tt>:
 #
 #   application: your_app_name
 #   user: rails
 #   deploy_to: /srv/your_app_name
-class MoonshineSetupManifest < ShadowPuppet::Manifest
-  configure(YAML.load_file('/tmp/moonshine.yml'))
+class MoonshadowSetupManifest < ShadowPuppet::Manifest
+  configure(YAML.load_file('/tmp/moonshadow.yml'))
 
   recipe :directories
 

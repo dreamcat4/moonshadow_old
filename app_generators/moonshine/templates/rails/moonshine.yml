@@ -25,16 +25,16 @@
 - log
 - pids
 - config
-# After specifying a gem with config.gem, run 'rake moonshine:gems'
+# After specifying a gem with config.gem, run 'rake moonshadow:gems'
 # to update config/gems.yml. If the gem depends on native packages, 
-# tell Moonshine here:
+# tell Moonshadow here:
 #:apt_gems:
 #  :awesomegem:
 #    - awesome
 #    - libawesome-dev
 #
 # See all the options for Passenger, Apache vhosts, and MySQL in the
-# respective templates: moonshine/lib/moonshine/manifest/rails/templates
+# respective templates: moonshadow/lib/moonshadow/manifest/rails/templates
 :passenger:
   :max_pool_size: 3
   :use_global_queue: true

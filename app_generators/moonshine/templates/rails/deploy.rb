@@ -1,3 +1,3 @@
-<%= moonshine_gem_string %>
-require 'moonshine/capistrano'
-server "moonshine-managed-server.com", :app, :web, :db, :primary => true
+<%= moonshadow_gem_string %>
+require 'moonshadow/capistrano'
+server "moonshadow-managed-server.com", :app, :web, :db, :primary => true

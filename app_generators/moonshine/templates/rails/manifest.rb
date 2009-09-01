@@ -1,15 +1,15 @@
-<%= moonshine_gem_string %>
-require 'moonshine'
-class <%= klass_name %> < Moonshine::Manifest::Rails
-  # The majority of your configuration should be in <tt>config/moonshine.yml</tt>
+<%= moonshadow_gem_string %>
+require 'moonshadow'
+class <%= klass_name %> < Moonshadow::Manifest::Rails
+  # The majority of your configuration should be in <tt>config/moonshadow.yml</tt>
   # If necessary, you may provide extra configuration directly in this class 
   # using the configure method. The hash passed to the configure method is deep 
-  # merged with what is in <tt>config/moonshine.yml</tt>. This could be used, 
+  # merged with what is in <tt>config/moonshadow.yml</tt>. This could be used, 
   # for example, to store passwords and/or private keys outside of your SCM, or 
   # to query a web service for configuration data.
   #
   # In the example below, the value configuration[:custom][:random] can be used in 
-  # your moonshine settings or templates.
+  # your moonshadow settings or templates.
   #
   # require 'net/http'
   # require 'json'
@@ -19,14 +19,14 @@ class <%= klass_name %> < Moonshine::Manifest::Rails
   # })
 
   # The default_stack recipe install Rails, Apache, Passenger, the database from 
-  # database.yml, Postfix, Cron, logrotate and NTP. See lib/moonshine/manifest/rails.rb
+  # database.yml, Postfix, Cron, logrotate and NTP. See lib/moonshadow/manifest/rails.rb
   # for details. To customize, remove this recipe and specify the components you want.
   recipe :default_stack
 
   # Add your application's custom requirements here
   def application_packages
-    # If you've already told Moonshine about a package required by a gem with
-    # :apt_gems in <tt>moonshine.yml</tt> you do not need to include it here.
+    # If you've already told Moonshadow about a package required by a gem with
+    # :apt_gems in <tt>moonshadow.yml</tt> you do not need to include it here.
     # package 'some_native_package', :ensure => :installed
     
     # some_rake_task = "/usr/bin/rake -f #{configuration[:deploy_to]}/current/Rakefile custom:task RAILS_ENV=#{ENV['RAILS_ENV']}"

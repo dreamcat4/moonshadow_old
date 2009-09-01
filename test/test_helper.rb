@@ -1,6 +1,6 @@
 # Must set before requiring generator libs.
 TMP_ROOT = File.dirname(__FILE__) + "/tmp" unless defined?(TMP_ROOT)
-PROJECT_NAME = "moonshine" unless defined?(PROJECT_NAME)
+PROJECT_NAME = "moonshadow" unless defined?(PROJECT_NAME)
 app_root = File.join(TMP_ROOT, PROJECT_NAME)
 if defined?(APP_ROOT)
   APP_ROOT.replace(app_root)
@@ -27,5 +27,5 @@ ENV['RAILS_ROOT'] ||= APP_ROOT
 require File.expand_path(File.join(APP_ROOT, 'config/environment.rb'))
 
 #require what we're actually testing
-require 'moonshine'
+require 'moonshadow'
 require 'shadow_puppet/test'

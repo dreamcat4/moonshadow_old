@@ -1,4 +1,4 @@
-module Moonshine::Manifest::Rails::Apache
+module Moonshadow::Manifest::Rails::Apache
 
   # Installs Apache 2.2 and enables mod_rewrite and mod_status. Enables mod_ssl
   # if <tt>configuration[:ssl]</tt> is present

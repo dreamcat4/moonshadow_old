@@ -1,21 +1,21 @@
 require 'test_helper'
 
-class MoonshineSetupManifestTest < Test::Unit::TestCase
+class MoonshadowSetupManifestTest < Test::Unit::TestCase
 
   def setup
     @user = 'user_from_capistrano'
     @application = 'app_from_capistrano'
     config = {:user => @user, :application => @application, :deploy_to => '/svr/application'}
-    File.open( '/tmp/moonshine.yml', 'w' ) do |out|
+    File.open( '/tmp/moonshadow.yml', 'w' ) do |out|
       YAML.dump(config, out)
     end
     #hax: create the config file before we require the manifest
-    require File.dirname(__FILE__) + '/../lib/moonshine_setup_manifest.rb'
-    @manifest = MoonshineSetupManifest.new
+    require File.dirname(__FILE__) + '/../lib/moonshadow_setup_manifest.rb'
+    @manifest = MoonshadowSetupManifest.new
   end
 
   def teardown
-    FileUtils.rm_r("/tmp/moonshine.yml") rescue true
+    FileUtils.rm_r("/tmp/moonshadow.yml") rescue true
   end
 
   def test_creates_directories

@@ -1,11 +1,11 @@
 require File.join(File.dirname(__FILE__), "test_helper.rb")
 
-class MoonshinePluginGeneratorTest < Test::Unit::TestCase
+class MoonshadowPluginGeneratorTest < Test::Unit::TestCase
   include RubiGen::GeneratorTestHelper
 
   def setup
     bare_setup
-    run_generator('moonshine_plugin', ['iptables'], sources)
+    run_generator('moonshadow_plugin', ['iptables'], sources)
   end
 
   def teardown
@@ -29,11 +29,11 @@ class MoonshinePluginGeneratorTest < Test::Unit::TestCase
   private
 
     def module_path
-      'vendor/plugins/moonshine_iptables/lib/iptables.rb'
+      'vendor/plugins/moonshadow_iptables/lib/iptables.rb'
     end
 
     def init_path
-      'vendor/plugins/moonshine_iptables/moonshine/init.rb'
+      'vendor/plugins/moonshadow_iptables/moonshadow/init.rb'
     end
 
     def sources

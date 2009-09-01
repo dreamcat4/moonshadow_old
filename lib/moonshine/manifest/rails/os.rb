@@ -1,4 +1,4 @@
-module Moonshine::Manifest::Rails::Os
+module Moonshadow::Manifest::Rails::Os
   # Set up cron and enable the service. You can create cron jobs in your
   # manifests like so:
   #
@@ -17,10 +17,10 @@ module Moonshine::Manifest::Rails::Os
   end
 
   # Create a MOTD to remind those logging in via SSH that things are managed
-  # with Moonshine
+  # with Moonshadow
   def motd
     motd_contents ="""-----------------
-Moonshine Managed
+Moonshadow Managed
 -----------------
 
   Application:  #{configuration[:application]}
@@ -30,7 +30,7 @@ Moonshine Managed
 ----------------
   A Reminder
 ----------------
-As the configuration of this server is managed with Moonshine, please refrain
+As the configuration of this server is managed with Moonshadow, please refrain
 from installing any gems, packages, or dependencies directly on the server.
 ----------------
 """

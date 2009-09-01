@@ -4,8 +4,8 @@ require 'rubygems'
 require 'rubigen'
 
 # if %w(-v --version).include? ARGV.first
-#   require 'moonshine/version'
-#   puts "#{File.basename($0)} #{Moonshine::VERSION}"
+#   require 'moonshadow/version'
+#   puts "#{File.basename($0)} #{Moonshadow::VERSION}"
 #   exit(0)
 # end
 
@@ -14,4 +14,4 @@ source = RubiGen::PathSource.new(:application,
   File.join(File.dirname(__FILE__), "../app_generators"))
 RubiGen::Base.reset_sources
 RubiGen::Base.append_sources source
-RubiGen::Scripts::Generate.new.run(ARGV, :generator => 'moonshine_plugin')
+RubiGen::Scripts::Generate.new.run(ARGV, :generator => 'moonshadow_plugin')

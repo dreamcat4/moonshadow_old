@@ -1,4 +1,4 @@
-namespace :moonshine do
+namespace :moonshadow do
 
   namespace :db do
     desc "Bootstrap the database with fixtures from db/boostrap."
@@ -43,8 +43,8 @@ namespace :moonshine do
 
     rake db:schema:load (if db/schema.rb exists)
     rake db:migrate (if db/migrate exists)
-    rake moonshine:db:bootstrap (if db/bootstrap/ exists)
-    rake moonshine:app:bootstrap
+    rake moonshadow:db:bootstrap (if db/bootstrap/ exists)
+    rake moonshadow:app:bootstrap
 
   All of this assumes one things. That your application can run 'rake
   environment' with an empty database. Please ensure your application can do
@@ -54,11 +54,11 @@ namespace :moonshine do
     Rake::Task["db:schema:load"].invoke if File.exist?("db/schema.rb")
     Rake::Task["environment"].invoke
     Rake::Task["db:migrate"].invoke if File.exist?("db/migrate")
-    Rake::Task["moonshine:db:bootstrap"].invoke if File.exist?("db/bootstrap")
-    Rake::Task["moonshine:app:bootstrap"].invoke
+    Rake::Task["moonshadow:db:bootstrap"].invoke if File.exist?("db/bootstrap")
+    Rake::Task["moonshadow:app:bootstrap"].invoke
   end
 
-  desc "Update config/moonshine.yml with a list of the required gems"
+  desc "Update config/moonshadow.yml with a list of the required gems"
   task :gems => 'gems:base' do
     gem_array = Rails.configuration.gems.reject(&:frozen?).map do |gem|
       hash = { :name => gem.name }

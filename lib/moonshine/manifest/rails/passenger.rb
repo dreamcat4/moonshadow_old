@@ -1,4 +1,4 @@
-module Moonshine::Manifest::Rails::Passenger
+module Moonshadow::Manifest::Rails::Passenger
   # Install the passenger gem
   def passenger_gem
     configure(:passenger => {})

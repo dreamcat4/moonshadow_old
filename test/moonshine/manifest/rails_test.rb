@@ -14,13 +14,13 @@ module Gem  #:nodoc:
   end
 end
 
-class Moonshine::Manifest::RailsTest < Test::Unit::TestCase
+class Moonshadow::Manifest::RailsTest < Test::Unit::TestCase
 
   def setup
     Gem::SourceIndex.send(:alias_method, :orig_search, :search)
     Gem::SourceIndex.send(:alias_method, :search, :sparse_search)
-    config = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', '..', 'app_generators', 'moonshine', 'templates', 'rails', 'moonshine.yml'))
-    @manifest = Moonshine::Manifest::Rails.new
+    config = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', '..', 'app_generators', 'moonshadow', 'templates', 'rails', 'moonshadow.yml'))
+    @manifest = Moonshadow::Manifest::Rails.new
     @manifest.configure(config)
   end
 
@@ -84,8 +84,8 @@ class Moonshine::Manifest::RailsTest < Test::Unit::TestCase
   def test_loads_gems_from_config_hash
     @manifest.configure(:gems => [ { :name => 'jnewland-pulse', :source => 'http://gems.github.com/' } ])
     @manifest.rails_gems
-    assert_not_nil Moonshine::Manifest::Rails.configuration[:gems]
-    Moonshine::Manifest::Rails.configuration[:gems].each do |gem|
+    assert_not_nil Moonshadow::Manifest::Rails.configuration[:gems]
+    Moonshadow::Manifest::Rails.configuration[:gems].each do |gem|
       assert_not_nil gem_resource = @manifest.packages[gem[:name]]
       assert_equal :gem, gem_resource.provider
     end

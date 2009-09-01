@@ -1,6 +1,6 @@
-module Moonshine::Manifest::Rails::Rails
+module Moonshadow::Manifest::Rails::Rails
 
-  # Attempt to bootstrap your application. Calls <tt>rake moonshine:bootstrap</tt>
+  # Attempt to bootstrap your application. Calls <tt>rake moonshadow:bootstrap</tt>
   # which runs:
   #
   #   rake db:schema:load (if db/schema.rb exists)
@@ -8,19 +8,19 @@ module Moonshine::Manifest::Rails::Rails
   #
   # We then run a task to load bootstrap fixtures from <tt>db/bootstrap</tt>
   # (if it exists). These fixtures may be created with the included
-  # <tt>moonshine:db:bootstrap:dump</tt> rake task.
+  # <tt>moonshadow:db:bootstrap:dump</tt> rake task.
   #
-  #   rake moonshine:db:bootstrap
+  #   rake moonshadow:db:bootstrap
   #
   # We then run the following task:
   #
-  #   rake moonshine:app:bootstrap
+  #   rake moonshadow:app:bootstrap
   #
-  # The <tt>moonshine:app:bootstrap</tt> task does nothing by default. If
+  # The <tt>moonshadow:app:bootstrap</tt> task does nothing by default. If
   # you'd like to have your application preform any logic on it's first deploy,
   # overwrite this task in your <tt>Rakefile</tt>:
   #
-  #   namespace :moonshine do
+  #   namespace :moonshadow do
   #     namespace :app do
   #       desc "Overwrite this task in your app if you have any bootstrap tasks that need to be run"
   #       task :bootstrap do
@@ -33,7 +33,7 @@ module Moonshine::Manifest::Rails::Rails
   # environment' with an empty database. Please ensure your application can do
   # so!
   def rails_bootstrap
-    rake 'moonshine:bootstrap',
+    rake 'moonshadow:bootstrap',
       :alias => 'rails_bootstrap',
       :refreshonly => true,
       :before => exec('rake db:migrate')
@@ -59,28 +59,28 @@ module Moonshine::Manifest::Rails::Rails
   # executes without error in your <tt>rails_root</tt>.
   def rails_rake_environment
     package 'rake', :provider => :gem, :ensure => :installed
-    file '/var/log/moonshine_rake.log',
+    file '/var/log/moonshadow_rake.log',
       :ensure   => :present,
       :owner    => configuration[:user],
       :group    => configuration[:group] || configuration[:user],
       :mode     => '775',
       :content  => ' '
     exec 'rake tasks',
-      :command => 'rake environment >> /var/log/moonshine_rake.log 2>&1',
+      :command => 'rake environment >> /var/log/moonshadow_rake.log 2>&1',
       :user => configuration[:user],
       :cwd => rails_root,
       :environment => "RAILS_ENV=#{ENV['RAILS_ENV']}",
       :require => [
         exec('rails_gems'),
         package('rake'),
-        file('/var/log/moonshine_rake.log')
+        file('/var/log/moonshadow_rake.log')
       ]
   end
 
   # Automatically install all gems needed specified in the array at
   # <tt>configuration[:gems]</tt>. This loads gems from
   # <tt>config/gems.yml</tt>, which can be generated from by running
-  # <tt>rake moonshine:gems</tt> locally.
+  # <tt>rake moonshadow:gems</tt> locally.
   def rails_gems
     gemrc = {
       :verbose => true,
@@ -155,7 +155,7 @@ private
   # <tt>libxslt1-dev</tt> because those are defined as dependencies for
   # <tt>nokogiri</tt>.
   #
-  # To define system dependencies not include in moonshine:
+  # To define system dependencies not include in moonshadow:
   #
   #   class UrManifest < ShadowPuppet::Manifest
   #     configure(:apt_gems => {
@@ -225,7 +225,7 @@ private
   # app, with RAILS_ENV properly set
   def rake(name, options = {})
     exec("rake #{name}", {
-      :command => "rake #{name} >> /var/log/moonshine_rake.log 2>&1",
+      :command => "rake #{name} >> /var/log/moonshadow_rake.log 2>&1",
       :user => configuration[:user],
       :cwd => rails_root,
       :environment => "RAILS_ENV=#{ENV['RAILS_ENV']}",
