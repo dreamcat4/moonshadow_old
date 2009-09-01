@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{moonshadow}
-  s.version = "0.0.4"
+  s.version = "0.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jesse Newland", "Rob Lingle"]
@@ -14,13 +14,13 @@ Gem::Specification.new do |s|
     "LICENSE"
   ]
   s.files = [
-    "app_generators/moonshadow/moonshine_generator.rb",
+    "app_generators/moonshadow/moonshadow_generator.rb",
     "app_generators/moonshadow/templates/Capfile",
     "app_generators/moonshadow/templates/rails/deploy.rb",
     "app_generators/moonshadow/templates/rails/gems.yml",
     "app_generators/moonshadow/templates/rails/manifest.rb",
-    "app_generators/moonshadow/templates/rails/moonshine.rake",
-    "app_generators/moonshadow/templates/rails/moonshine.yml",
+    "app_generators/moonshadow/templates/rails/moonshadow.rake",
+    "app_generators/moonshadow/templates/rails/moonshadow.yml",
     "app_generators/moonshadow/templates/readme.templates",
     "app_generators/moonshadow_plugin/USAGE",
     "app_generators/moonshadow_plugin/moonshine_plugin_generator.rb",
@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
     "lib/moonshadow/manifest/rails/sqlite3.rb",
     "lib/moonshadow/manifest/rails/templates/innodb.cnf.erb",
     "lib/moonshadow/manifest/rails/templates/logrotate.conf.erb",
-    "lib/moonshadow/manifest/rails/templates/moonshine.cnf.erb",
+    "lib/moonshadow/manifest/rails/templates/moonshadow.cnf.erb",
     "lib/moonshadow/manifest/rails/templates/passenger.conf.erb",
     "lib/moonshadow/manifest/rails/templates/passenger.vhost.erb",
     "lib/moonshadow/manifest/rails/templates/pg_hba.conf.erb",
