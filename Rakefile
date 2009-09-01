@@ -36,7 +36,7 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "moonshine"
+    gemspec.name = "moonshadow"
     gemspec.description = gemspec.summary = "Rails deployment and configuration management done right. ShadowPuppet + Capistrano == crazy delicious"
     gemspec.email = "jesse@railsmachine.com"
     gemspec.homepage = "http://railsmachine.github.com/moonshine/"
@@ -46,6 +46,7 @@ begin
     gemspec.add_dependency('shadow_puppet', '>= 0.3.1')
     gemspec.add_dependency('rake', '>= 0.8.7')
     gemspec.add_dependency('rubigen', '>= 1.5.2')
+    gemspec.add_dependency('commander', '>= 3.2.9')
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install jeweler"
