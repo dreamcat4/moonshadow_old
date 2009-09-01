@@ -46,7 +46,7 @@ begin
     gemspec.add_dependency('shadow_puppet', '>= 0.3.1')
     gemspec.add_dependency('rake', '>= 0.8.7')
     gemspec.add_dependency('rubigen', '>= 1.5.2')
-    gemspec.add_dependency('commander', '>= 3.2.9')
+    gemspec.add_dependency('visionmedia-commander', '>= 3.2.9')
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install jeweler"
