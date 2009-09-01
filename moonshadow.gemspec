@@ -2,58 +2,58 @@
 
 Gem::Specification.new do |s|
   s.name = %q{moonshadow}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jesse Newland", "Rob Lingle"]
   s.date = %q{2009-09-01}
   s.description = %q{Rails deployment and configuration management done right. ShadowPuppet + Capistrano == crazy delicious}
   s.email = %q{jesse@railsmachine.com}
-  s.executables = ["moonshine", "moonshine_plugin"]
+  s.executables = ["moonshadow", "moonshadow_plugin"]
   s.extra_rdoc_files = [
     "LICENSE"
   ]
   s.files = [
-    "app_generators/moonshine/moonshine_generator.rb",
-    "app_generators/moonshine/templates/Capfile",
-    "app_generators/moonshine/templates/rails/deploy.rb",
-    "app_generators/moonshine/templates/rails/gems.yml",
-    "app_generators/moonshine/templates/rails/manifest.rb",
-    "app_generators/moonshine/templates/rails/moonshine.rake",
-    "app_generators/moonshine/templates/rails/moonshine.yml",
-    "app_generators/moonshine/templates/readme.templates",
-    "app_generators/moonshine_plugin/USAGE",
-    "app_generators/moonshine_plugin/moonshine_plugin_generator.rb",
-    "app_generators/moonshine_plugin/templates/README.rdoc",
-    "app_generators/moonshine_plugin/templates/init.rb",
-    "app_generators/moonshine_plugin/templates/plugin.rb",
-    "app_generators/moonshine_plugin/templates/spec.rb",
-    "app_generators/moonshine_plugin/templates/spec_helper.rb",
-    "bin/moonshine",
-    "bin/moonshine_plugin",
-    "lib/moonshine.rb",
-    "lib/moonshine/bootstrap/bootstrap.mri.sh",
-    "lib/moonshine/bootstrap/bootstrap.ree.sh",
-    "lib/moonshine/capistrano.rb",
-    "lib/moonshine/manifest.rb",
-    "lib/moonshine/manifest/rails.rb",
-    "lib/moonshine/manifest/rails/apache.rb",
-    "lib/moonshine/manifest/rails/apt_gems.yml",
-    "lib/moonshine/manifest/rails/mysql.rb",
-    "lib/moonshine/manifest/rails/os.rb",
-    "lib/moonshine/manifest/rails/passenger.rb",
-    "lib/moonshine/manifest/rails/postgresql.rb",
-    "lib/moonshine/manifest/rails/rails.rb",
-    "lib/moonshine/manifest/rails/sqlite3.rb",
-    "lib/moonshine/manifest/rails/templates/innodb.cnf.erb",
-    "lib/moonshine/manifest/rails/templates/logrotate.conf.erb",
-    "lib/moonshine/manifest/rails/templates/moonshine.cnf.erb",
-    "lib/moonshine/manifest/rails/templates/passenger.conf.erb",
-    "lib/moonshine/manifest/rails/templates/passenger.vhost.erb",
-    "lib/moonshine/manifest/rails/templates/pg_hba.conf.erb",
-    "lib/moonshine/manifest/rails/templates/postgresql.conf.erb",
-    "lib/moonshine/manifest/rails/templates/unattended_upgrades.erb",
-    "lib/moonshine_setup_manifest.rb"
+    "app_generators/moonshadow/moonshine_generator.rb",
+    "app_generators/moonshadow/templates/Capfile",
+    "app_generators/moonshadow/templates/rails/deploy.rb",
+    "app_generators/moonshadow/templates/rails/gems.yml",
+    "app_generators/moonshadow/templates/rails/manifest.rb",
+    "app_generators/moonshadow/templates/rails/moonshine.rake",
+    "app_generators/moonshadow/templates/rails/moonshine.yml",
+    "app_generators/moonshadow/templates/readme.templates",
+    "app_generators/moonshadow_plugin/USAGE",
+    "app_generators/moonshadow_plugin/moonshine_plugin_generator.rb",
+    "app_generators/moonshadow_plugin/templates/README.rdoc",
+    "app_generators/moonshadow_plugin/templates/init.rb",
+    "app_generators/moonshadow_plugin/templates/plugin.rb",
+    "app_generators/moonshadow_plugin/templates/spec.rb",
+    "app_generators/moonshadow_plugin/templates/spec_helper.rb",
+    "bin/moonshadow",
+    "bin/moonshadow_plugin",
+    "lib/moonshadow.rb",
+    "lib/moonshadow/bootstrap/bootstrap.mri.sh",
+    "lib/moonshadow/bootstrap/bootstrap.ree.sh",
+    "lib/moonshadow/capistrano.rb",
+    "lib/moonshadow/manifest.rb",
+    "lib/moonshadow/manifest/rails.rb",
+    "lib/moonshadow/manifest/rails/apache.rb",
+    "lib/moonshadow/manifest/rails/apt_gems.yml",
+    "lib/moonshadow/manifest/rails/mysql.rb",
+    "lib/moonshadow/manifest/rails/os.rb",
+    "lib/moonshadow/manifest/rails/passenger.rb",
+    "lib/moonshadow/manifest/rails/postgresql.rb",
+    "lib/moonshadow/manifest/rails/rails.rb",
+    "lib/moonshadow/manifest/rails/sqlite3.rb",
+    "lib/moonshadow/manifest/rails/templates/innodb.cnf.erb",
+    "lib/moonshadow/manifest/rails/templates/logrotate.conf.erb",
+    "lib/moonshadow/manifest/rails/templates/moonshine.cnf.erb",
+    "lib/moonshadow/manifest/rails/templates/passenger.conf.erb",
+    "lib/moonshadow/manifest/rails/templates/passenger.vhost.erb",
+    "lib/moonshadow/manifest/rails/templates/pg_hba.conf.erb",
+    "lib/moonshadow/manifest/rails/templates/postgresql.conf.erb",
+    "lib/moonshadow/manifest/rails/templates/unattended_upgrades.erb",
+    "lib/moonshadow_setup_manifest.rb"
   ]
   s.homepage = %q{http://railsmachine.github.com/moonshine/}
   s.rdoc_options = ["--charset=UTF-8"]
