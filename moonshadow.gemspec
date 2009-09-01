@@ -69,17 +69,17 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<shadow_puppet>, [">= 0.3.1"])
       s.add_runtime_dependency(%q<rake>, [">= 0.8.7"])
       s.add_runtime_dependency(%q<rubigen>, [">= 1.5.2"])
-      s.add_runtime_dependency(%q<commander>, [">= 3.2.9"])
+      s.add_runtime_dependency(%q<visionmedia-commander>, [">= 3.2.9"])
     else
       s.add_dependency(%q<shadow_puppet>, [">= 0.3.1"])
       s.add_dependency(%q<rake>, [">= 0.8.7"])
       s.add_dependency(%q<rubigen>, [">= 1.5.2"])
-      s.add_dependency(%q<commander>, [">= 3.2.9"])
+      s.add_dependency(%q<visionmedia-commander>, [">= 3.2.9"])
     end
   else
     s.add_dependency(%q<shadow_puppet>, [">= 0.3.1"])
     s.add_dependency(%q<rake>, [">= 0.8.7"])
     s.add_dependency(%q<rubigen>, [">= 1.5.2"])
-    s.add_dependency(%q<commander>, [">= 3.2.9"])
+    s.add_dependency(%q<visionmedia-commander>, [">= 3.2.9"])
   end
 end
