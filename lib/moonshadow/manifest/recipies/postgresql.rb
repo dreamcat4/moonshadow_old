@@ -2,7 +2,7 @@
 #
 #    recipe :postgresql_server, :postgresql_gem, :postgresql_user, :postgresql_database
 #
-module Moonshadow::Manifest::Rails::Postgresql
+module Moonshadow::Manifest::Postgresql
 
   # Installs <tt>postgresql</tt> from apt and enables the <tt>postgresql</tt>
   # service.

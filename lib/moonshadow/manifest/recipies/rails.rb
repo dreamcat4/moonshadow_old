@@ -1,4 +1,4 @@
-module Moonshadow::Manifest::Rails::Rails
+module Moonshadow::Manifest::Rails
 
   # Attempt to bootstrap your application. Calls <tt>rake moonshadow:bootstrap</tt>
   # which runs:

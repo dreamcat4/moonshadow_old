@@ -1,17 +1,63 @@
 #!/usr/bin/env ruby
-
 require 'rubygems'
-require 'rubigen'
 
-# if %w(-v --version).include? ARGV.first
-#   require 'moonshadow/version'
-#   puts "#{File.basename($0)} #{Moonshadow::VERSION}"
-#   exit(0)
-# end
+  require 'commander'
 
-require 'rubigen/scripts/generate'
-source = RubiGen::PathSource.new(:application, 
-  File.join(File.dirname(__FILE__), "../app_generators"))
-RubiGen::Base.reset_sources
-RubiGen::Base.append_sources source
-RubiGen::Scripts::Generate.new.run(ARGV, :generator => 'moonshadow')
+  # :name is optional, otherwise uses the basename of this executable
+  program :name, 'moonshadow'
+  program :version, '0.0.5'
+  program :description, 'Deployment with capistrano and shadowpuppet.'
+
+  command :ssh do |c|
+    c.syntax = 'moonshadow ssh [options]'
+    c.description = 'Create username'
+    c.option '--useradd USERNAME', String, 'Application type'
+    c.option '--userdel USERNAME', String, 'Application type'
+    c.option '--server SERVER', String, 'Servernames'
+    c.when_called do |args, options|
+      init
+    end
+  end
+
+  types = ["static","php","rails","merb"]
+  # recipies = ["ree","nginx","apache"]
+  recipies = ["default_stack"]
+  
+  command :init do |c|
+    c.syntax = 'moonshadow init [options]'
+    c.description = 'Initialize target directory with moonshadow configuration file'
+    c.option "--type [#{types.join('|')}]", String, 'Application type'
+    c.option "--recipie [#{recipies.join('|')}]", String, 'Recipie to use'
+    c.when_called do |args, options|
+      # options.default :type => default_type, :recipie => default_recipie
+      # options.default :type => "default_type", :recipie => "default_recipie"
+      moonshadow_init args, options.__hash__
+    end
+  end
+
+  command :push do |c|
+    c.syntax = 'moonshadow push [options]'
+    c.description = 'Push changes out to remotes'
+    c.option '--server STRING', String, 'Server to deploy to'
+    c.option '--servers STRING', Array, 'List of servers to deploy to'
+    c.when_called do |args, options|
+      # add_server options.server if options.server
+      # add_servers options.servers if options.servers
+      # options.default :servers => default_servers, :suffix => ')'
+      # moonshadow_deploy
+    end
+  end
+
+
+  require 'rubigen'
+  require 'rubigen/scripts/generate'
+
+  def moonshadow_init(args = [], generator_options = {})
+    source = RubiGen::PathSource.new(:application, File.join(File.dirname(__FILE__), "../app_generators"))
+    RubiGen::Base.reset_sources
+    RubiGen::Base.append_sources source
+    generator_options.merge!(:generator => 'moonshadow')
+    RubiGen::Scripts::Generate.new.run(args, generator_options)
+  end
+
+

@@ -1,4 +1,4 @@
-module Moonshadow::Manifest::Rails::Apache
+module Moonshadow::Manifest::Apache
 
   # Installs Apache 2.2 and enables mod_rewrite and mod_status. Enables mod_ssl
   # if <tt>configuration[:ssl]</tt> is present
@@ -14,7 +14,7 @@ module Moonshadow::Manifest::Rails::Apache
     if configuration[:apache] && configuration[:apache][:users]
       htpasswd = configuration[:apache][:htpasswd] || "#{configuration[:deploy_to]}/shared/config/htpasswd"
       
-      file htpasswd, :ensure => :file, :owner => 'rails', :mode => '644'
+      file htpasswd, :ensure => :file, :owner => "#{configuration[:user]}", :mode => '644'
       
       configuration[:apache][:users].each do |user,pass|
         exec "htpasswd #{user}",

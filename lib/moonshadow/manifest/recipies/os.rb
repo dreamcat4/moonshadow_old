@@ -1,4 +1,4 @@
-module Moonshadow::Manifest::Rails::Os
+module Moonshadow::Manifest::Os
   # Set up cron and enable the service. You can create cron jobs in your
   # manifests like so:
   #

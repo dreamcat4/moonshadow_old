@@ -1,15 +1,22 @@
 require 'tempfile'
+require 'rubygems'
 class MoonshadowGenerator < RubiGen::Base
-  attr_reader :file_name, :klass_name, :is_rails_app, :moonshadow_version
+  attr_reader :file_name, :moonshadow_version
 
-  def initialize(runtime_args, runtime_options = {})
+  def initialize(args = [], options = {})
     super
-    @destination_root = args.shift || "."
+    puts "options"
+    puts options
+    puts "options_end"
+    @options = options
+    @destination_root = nil || "."
     @file_name = "application_manifest"
-    @klass_name = @file_name.classify
-    @is_rails_app = detect_rails
-    gem 'moonshadow'
-    @moonshadow_version = Gem.loaded_specs["moonshadow"].version.to_s
+    # @klass_name = @file_name.classify
+    @options[:klass_name] = @file_name.camelize
+    # puts "klass_name = #{@klass_name}"
+    @options[:type] = detect_type unless options[:type]
+    gem 'dreamcat4-moonshadow'
+    @moonshadow_version = Gem.loaded_specs["dreamcat4-moonshadow"].version.to_s
   end
 
   # Override with your own usage banner.
@@ -22,9 +29,9 @@ class MoonshadowGenerator < RubiGen::Base
       directories(m)
       m.template  'readme.templates', 'app/manifests/templates/README'
       m.template  'Capfile', 'Capfile'
-      m.template  "#{application_type}/moonshadow.yml", "config/moonshadow.yml"
-      m.template  "#{application_type}/moonshadow.rake", 'lib/tasks/moonshadow.rake'
-      m.template  'rails/gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if is_rails_app
+      m.template  "#{options[:type]}/moonshadow.yml", "config/moonshadow.yml"
+      m.template  "#{options[:type]}/moonshadow.rake", 'lib/tasks/moonshadow.rake'
+      m.template  'rails/gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if options[:type] == 'rails'
       generate_or_upgrade_manifest(m)
       generate_or_upgrade_deploy(m)
     end
@@ -52,6 +59,7 @@ define the server 'stack', cron jobs, mail aliases, configuration files
   end
 
   def detect_rails
+    # return false
     begin
       require File.expand_path(File.join(destination_root, 'config/environment.rb'))
     rescue LoadError
@@ -61,8 +69,9 @@ define the server 'stack', cron jobs, mail aliases, configuration files
     end
   end
 
-  def application_type
-    is_rails_app ? 'rails' : 'standalone'
+  def detect_type
+    detect_rails ? 'rails' : 'standalone'
+    # types.each do |type| ...
   end
 
   def gems
@@ -104,7 +113,7 @@ define the server 'stack', cron jobs, mail aliases, configuration files
         end
       end
     else
-      m.template  "#{application_type}/manifest.rb", "app/manifests/#{file_name}.rb", :assigns => { :moonshadow_gem_string => moonshadow_gem_string }
+      m.template  "#{options[:type]}/manifest.rb", "app/manifests/#{file_name}.rb", :assigns => { :moonshadow_gem_string => moonshadow_gem_string }
     end
   end
 
@@ -119,7 +128,7 @@ define the server 'stack', cron jobs, mail aliases, configuration files
         File.prepend(destination_path('config/deploy.rb'), "#{moonshadow_gem_string}\nrequire 'moonshadow/capistrano'\n")
       end
     else
-      m.template  "#{application_type}/deploy.rb", 'config/deploy.rb', :assigns => { :moonshadow_gem_string => moonshadow_gem_string }
+      m.template  "#{options[:type]}/deploy.rb", 'config/deploy.rb', :assigns => { :moonshadow_gem_string => moonshadow_gem_string }
     end
   end
 

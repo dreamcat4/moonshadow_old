@@ -1,4 +1,4 @@
-module Moonshadow::Manifest::Rails::Mysql
+module Moonshadow::Manifest::Mysql
 
   # Installs <tt>mysql-server</tt> from apt and enables the <tt>mysql</tt>
   # service. Also creates a configuration file at

@@ -1,10 +1,39 @@
-module Moonshadow::Manifest::Rails::Passenger
+module Moonshine::Manifest::Rails::Php
   # Install the passenger gem
-  def passenger_gem
-    configure(:passenger => {})
-    package "passenger", :ensure => (configuration[:passenger][:version] || :latest), :provider => :gem
+  def php5_fpm
+    configure(:php => {})
+    package "php5-fpm", :ensure => (configuration[:php][:version] || :latest)
+    package "xcache", :ensure => :installed
+    service "php-fpm", ensure => running, enable => true
+    
+  end
+  
+  def configure_php5_fpm
+    package "php5-fpm", :ensure => :installed
+
+    nginx_conf = {
+      "prefix" => "/usr/local/nginx",
+      "sbin-path" => "/usr/sbin/nginx",
+            
+      "without-mail_imap_module" => true,
+      "without-mail_smtp_module" => true,
+    }
+    
+    file php_fpm[:conf],
+      :ensure => :present,
+      :content => template(File.join(File.dirname(__FILE__), 'templates', 'nginx.conf.erb')),
+      :notify => service("php-fpm"),
+    
+    package "xcache", :ensure => :installed
+    file nginx_flags["prefix"], :ensure => :absent, :recurse => true
+    service "php-fpm", ensure => running, enable => true
   end
 
+  def php5_apache2
+    package "php5", :ensure => :installed
+    
+  end
+  
   # Build, install, and enable the passenger apache module. Please see the
   # <tt>passenger.conf.erb</tt> template for passenger configuration options.
   def passenger_apache_module
