@@ -1,9 +1,11 @@
+:moonshadow_version: <%= self.options[:moonshadow_version] %>
+:type: <%= self.options[:type] %>
 :ruby: ree
-:application: your_app_name
-:user: rails
+:application: <%= self.options[:name] %>
+:user: <%= self.options[:user] %>
 #:time_zone: UTC
-:deploy_to: /srv/your_app_name
-:domain: yourapp.com
+:deploy_to: <%= self.options[:deploy_to] %>/srv/your_app_name
+:domain: <%= self.options[:server] %>yourapp.com
 #:domain_aliases:
 #  - assets1.yourapp.com
 #  - assets2.yourapp.com

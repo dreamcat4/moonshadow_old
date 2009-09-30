@@ -55,7 +55,7 @@ EOF
       :command => mysql_query("create database #{database_environment[:database]};"),
       :unless => mysql_query("show create database #{database_environment[:database]};"),
       :require => service('mysql'),
-      :notify => exec('rails_bootstrap')
+      :notify => exec('db_bootstrap')
   end
 
   # Noop <tt>/etc/mysql/debian-start</tt>, which does some nasty table scans on

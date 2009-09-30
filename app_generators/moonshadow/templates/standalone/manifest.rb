@@ -23,9 +23,9 @@ class <%= self.options[:klass_name] %> < Moonshadow::Manifest::Recipies
   # for details. To customize, remove this recipe and specify the components you want.
   recipe :apache_stack
   # recipe :nginx_stack
-  # <%= self.options[:type].camelize %>
-  # <%= self.options[:stack] %>
-  # <%= self.options[:extra_recipies].each %>
+  # <!!%= self.options[:type].camelize %>
+  # <!!%= self.options[:stack] %>
+  # <!!%= self.options[:extra_recipies].each %>
   
   # Add your application's custom requirements here
   def application_packages

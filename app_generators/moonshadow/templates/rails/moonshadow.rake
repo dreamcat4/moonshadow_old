@@ -50,7 +50,7 @@ namespace :moonshadow do
   environment' with an empty database. Please ensure your application can do
   so!
   DOC
-  task :bootstrap do
+  task :rails_bootstrap do
     Rake::Task["db:schema:load"].invoke if File.exist?("db/schema.rb")
     Rake::Task["environment"].invoke
     Rake::Task["db:migrate"].invoke if File.exist?("db/migrate")

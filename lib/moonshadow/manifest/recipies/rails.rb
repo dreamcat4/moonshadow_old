@@ -32,9 +32,10 @@ module Moonshadow::Manifest::Rails
   # All of this assumes one things. That your application can run 'rake
   # environment' with an empty database. Please ensure your application can do
   # so!
-  def rails_bootstrap
-    rake 'moonshadow:bootstrap',
-      :alias => 'rails_bootstrap',
+  def db_bootstrap
+    if configuration[:type] == 'rails'
+    rake 'moonshadow:rails_bootstrap',
+      :alias => 'db_bootstrap',
       :refreshonly => true,
       :before => exec('rake db:migrate')
   end

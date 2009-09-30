@@ -38,7 +38,7 @@ class Moonshadow::Manifest::Recipies < Moonshadow::Manifest
     when 'sqlite' || 'sqlite3'
       self.class.recipe :sqlite3
     end
-    self.class.recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_bootstrap, :rails_migrations, :rails_logrotate
+    self.class.recipe :rails_rake_environment, :rails_gems, :rails_directories, :db_bootstrap, :rails_migrations, :rails_logrotate
     self.class.recipe :ntp, :time_zone, :postfix, :cron_packages, :motd, :security_updates
   end
 
@@ -57,7 +57,7 @@ class Moonshadow::Manifest::Recipies < Moonshadow::Manifest
     when 'sqlite' || 'sqlite3'
       self.class.recipe :sqlite3
     end
-    self.class.recipe :rails_rake_environment, :rails_gems, :rails_directories, :rails_bootstrap, :rails_migrations, :rails_logrotate
+    self.class.recipe :rails_rake_environment, :rails_gems, :rails_directories, :db_bootstrap, :rails_migrations, :rails_logrotate
     self.class.recipe :ntp, :time_zone, :postfix, :cron_packages, :motd, :security_updates
   end
 

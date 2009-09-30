@@ -1,22 +1,20 @@
 require 'tempfile'
 require 'rubygems'
 class MoonshadowGenerator < RubiGen::Base
-  attr_reader :file_name, :moonshadow_version
+  attr_reader :file_name
 
-  def initialize(args = [], options = {})
+  def initialize(runtime_args = [], runtime_options = {})
     super
     puts "options"
     puts options
     puts "options_end"
-    @options = options
+    @options.merge runtime_options
     @destination_root = nil || "."
     @file_name = "application_manifest"
-    # @klass_name = @file_name.classify
     @options[:klass_name] = @file_name.camelize
-    # puts "klass_name = #{@klass_name}"
     @options[:type] = detect_type unless options[:type]
-    gem 'dreamcat4-moonshadow'
-    @moonshadow_version = Gem.loaded_specs["dreamcat4-moonshadow"].version.to_s
+    gem 'moonshadow'
+    @options[:moonshadow_version] = Gem.loaded_specs["moonshadow"].version.to_s
   end
 
   # Override with your own usage banner.
@@ -30,8 +28,10 @@ class MoonshadowGenerator < RubiGen::Base
       m.template  'readme.templates', 'app/manifests/templates/README'
       m.template  'Capfile', 'Capfile'
       m.template  "#{options[:type]}/moonshadow.yml", "config/moonshadow.yml"
-      m.template  "#{options[:type]}/moonshadow.rake", 'lib/tasks/moonshadow.rake'
-      m.template  'rails/gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if options[:type] == 'rails'
+      if opions[:type] == 'rails'
+        m.template  "#{options[:type]}/moonshadow.rake", 'lib/tasks/moonshadow.rake'
+        m.template  'rails/gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if options[:type] == 'rails'
+      end
       generate_or_upgrade_manifest(m)
       generate_or_upgrade_deploy(m)
     end
@@ -133,7 +133,7 @@ define the server 'stack', cron jobs, mail aliases, configuration files
   end
 
   def moonshadow_gem_string
-    "gem 'moonshadow', '= #{moonshadow_version}'"
+    "gem 'moonshadow', '= #{options[:moonshadow_version]}'"
   end
 
   def gsub_file(relative_destination, regexp, *args, &block)

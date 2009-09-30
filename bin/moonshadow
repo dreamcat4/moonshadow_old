@@ -20,17 +20,23 @@ require 'rubygems'
   end
 
   types = ["static","php","rails","merb"]
-  # recipies = ["ree","nginx","apache"]
-  recipies = ["default_stack"]
-  
+  recipies = ["nginx_stack","apache_stack"]
+
   command :init do |c|
+    default_name = File.basename(FileUtils.pwd)
+    default_user = 'moonshadow'
     c.syntax = 'moonshadow init [options]'
-    c.description = 'Initialize target directory with moonshadow configuration file'
-    c.option "--type [#{types.join('|')}]", String, 'Application type'
-    c.option "--recipie [#{recipies.join('|')}]", String, 'Recipie to use'
+    c.description = 'Initialize current working directory with moonshadow configuration file'
+    c.option "--user [moonshadow]", String, "Moonshadow deploy username"
+    c.option "--name [#{default_name}]", String, 'Web application name'
+    c.option "--type [#{types.join('|')}]", String, "Application type"
+    c.option "--recipie [#{recipies.join('|')}]", String, "Recipie to use"
     c.when_called do |args, options|
-      # options.default :type => default_type, :recipie => default_recipie
-      # options.default :type => "default_type", :recipie => "default_recipie"
+      options.default :user => default_user
+      options.default :name => default_name
+      options.default :type => types.first
+      options.default :recipie => recipies.first
+      
       moonshadow_init args, options.__hash__
     end
   end
