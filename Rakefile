@@ -37,16 +37,17 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
     gemspec.name = "moonshadow"
-    gemspec.description = gemspec.summary = "Rails deployment and configuration management done right. ShadowPuppet + Capistrano == crazy delicious"
+    gemspec.description = gemspec.summary = "In development"
     gemspec.email = "jesse@railsmachine.com"
-    gemspec.homepage = "http://railsmachine.github.com/moonshine/"
-    gemspec.authors = ["Jesse Newland", "Rob Lingle"]
+    gemspec.homepage = "http://github.com/dreamcat4/moonshadow"
+    gemspec.authors = ["Jesse Newland", "Rob Lingle", "dreamcat4"]
     gemspec.files = FileList.new('lib/**/*', 'bin/**/*', 'app_generators/**/*')
     gemspec.test_files = []
     gemspec.add_dependency('shadow_puppet', '>= 0.3.1')
     gemspec.add_dependency('rake', '>= 0.8.7')
     gemspec.add_dependency('rubigen', '>= 1.5.2')
     gemspec.add_dependency('visionmedia-commander', '>= 3.2.9')
+    gemspec.add_dependency('dreamcat4-settingslogic', '>= 2.0.5')
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install jeweler"

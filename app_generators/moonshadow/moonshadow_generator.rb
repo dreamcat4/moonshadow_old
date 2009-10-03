@@ -1,5 +1,6 @@
 require 'tempfile'
 require 'rubygems'
+# require File.join(File.dirname(__FILE__), '../../lib/moonshadow/types.rb')
 class MoonshadowGenerator < RubiGen::Base
   attr_reader :file_name
 
@@ -28,7 +29,7 @@ class MoonshadowGenerator < RubiGen::Base
       m.template  'readme.templates', 'app/manifests/templates/README'
       m.template  'Capfile', 'Capfile'
       m.template  "#{options[:type]}/moonshadow.yml", "config/moonshadow.yml"
-      if opions[:type] == 'rails'
+      if options[:type] == 'rails'
         m.template  "#{options[:type]}/moonshadow.rake", 'lib/tasks/moonshadow.rake'
         m.template  'rails/gems.yml', 'config/gems.yml', :assigns => { :gems => gems } if options[:type] == 'rails'
       end
@@ -70,8 +71,7 @@ define the server 'stack', cron jobs, mail aliases, configuration files
   end
 
   def detect_type
-    detect_rails ? 'rails' : 'standalone'
-    # types.each do |type| ...
+    Moonshadow::Type::detect destination_root
   end
 
   def gems

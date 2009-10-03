@@ -19,7 +19,10 @@ require 'rubygems'
     end
   end
 
-  types = ["static","php","rails","merb"]
+  require File.join(File.dirname(__FILE__), '../lib/moonshadow/types.rb')
+  types = Moonshadow::Type::types
+  puts "types=#{types.inspect}"
+
   recipies = ["nginx_stack","apache_stack"]
 
   command :init do |c|
@@ -29,12 +32,11 @@ require 'rubygems'
     c.description = 'Initialize current working directory with moonshadow configuration file'
     c.option "--user [moonshadow]", String, "Moonshadow deploy username"
     c.option "--name [#{default_name}]", String, 'Web application name'
-    c.option "--type [#{types.join('|')}]", String, "Application type"
+    c.option "--type [#{types.join('|')}]", String, "Override application type detection"
     c.option "--recipie [#{recipies.join('|')}]", String, "Recipie to use"
     c.when_called do |args, options|
       options.default :user => default_user
       options.default :name => default_name
-      options.default :type => types.first
       options.default :recipie => recipies.first
       
       moonshadow_init args, options.__hash__
