@@ -143,13 +143,6 @@ user_load_paths
 
   # moonshadow init --type static --trace
   def moonshadow_init(args = [], generator_options = {})
-    # require 'rubigen'
-    # require 'rubigen/scripts/generate'
-    # source = RubiGen::PathSource.new(:application, File.join(File.dirname(__FILE__), "../app_generators"))
-    # RubiGen::Base.reset_sources
-    # RubiGen::Base.append_sources source
-    # generator_options.merge!(:generator => 'moonshadow')
-    # RubiGen::Scripts::Generate.new.run(args, generator_options)
     require File.expand_path(File.join(File.dirname(__FILE__), "../lib/moonshadow/config/manifest.rb"))
     MoonshadowGenerator.new(args,generator_options)
   end
