@@ -1,0 +1,6 @@
+# load 'deploy' if respond_to?(:namespace) # cap2 differentiator
+# Dir['vendor/plugins/*/recipes/*.rb'].each { |plugin| load(plugin) }
+# load 'deploy'
+# load File.join(File.dirname(__FILE__), "deploy.rb")
+
+

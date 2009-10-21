@@ -1,6 +1,6 @@
 <%= moonshadow_gem_string %>
 require 'moonshadow'
-class <%= self.options[:klass_name] %> < Moonshadow::Manifest::Recipies
+class <%= klass_name %> < Moonshadow::Manifest::Rails
   # The majority of your configuration should be in <tt>config/moonshadow.yml</tt>
   # If necessary, you may provide extra configuration directly in this class 
   # using the configure method. The hash passed to the configure method is deep 
@@ -18,15 +18,11 @@ class <%= self.options[:klass_name] %> < Moonshadow::Manifest::Recipies
   #   :custom => { :random => random  }
   # })
 
-  # The apache_stack recipe install Rails, Apache, Passenger, the database from 
+  # The default_stack recipe install Rails, Apache, Passenger, the database from 
   # database.yml, Postfix, Cron, logrotate and NTP. See lib/moonshadow/manifest/rails.rb
   # for details. To customize, remove this recipe and specify the components you want.
-  recipe :apache_stack
-  # recipe :nginx_stack
-  # <!!%= self.options[:type].camelize %>
-  # <!!%= self.options[:stack] %>
-  # <!!%= self.options[:extra_recipies].each %>
-  
+  recipe :default_stack
+
   # Add your application's custom requirements here
   def application_packages
     # If you've already told Moonshadow about a package required by a gem with

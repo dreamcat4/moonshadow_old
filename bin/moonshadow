@@ -1,32 +1,82 @@
 #!/usr/bin/env ruby
 require 'rubygems'
+def user_load_paths
+  Dir.glob(File.expand_path(File.join('~', 'tmp', '*', 'lib'))).each do |path|
+    $LOAD_PATH << path
+  end
+end
+user_load_paths
+  
+  # rm ~/.moonshadow ; moonshadow init ; cat ~/.moonshadow
+  # rm ~/.moonshadow ; moonshadow init &> /dev/null; cat ~/.moonshadow
 
   require 'commander'
+  program :formatter, :compact
+  # global_option('-c', '--config FILE', 'Load alternative config data for your commands to use') do |file|
+  # end
 
   # :name is optional, otherwise uses the basename of this executable
   program :name, 'moonshadow'
   program :version, '0.0.5'
   program :description, 'Deployment with capistrano and shadowpuppet.'
 
-  command :ssh do |c|
+  # command :ssh do |c|
+  # command :add do |c|
+  ms_user=""
+  host_file=""
+  command :register do |c|
     c.syntax = 'moonshadow ssh [options]'
     c.description = 'Create username'
-    c.option '--useradd USERNAME', String, 'Application type'
-    c.option '--userdel USERNAME', String, 'Application type'
-    c.option '--server SERVER', String, 'Servernames'
+    c.option "--auth-user USERNAME", String, 'Application type'
+    c.option "--ms-user [#{ms_user}]", String, 'Application type'
+    c.option "--host HOSTNAME", String, 'hostname'
+    c.option "--hosts HOST1,HOST2...", String, 'hostnames'
+    c.option "--hosts-file [#{host_file}]", String, 'hostnames'
     c.when_called do |args, options|
-      init
+      # init
+      # Load Yaml. Check user and ms_user for defaults,~/.msconfig,./.msconfig
+      # Query user's ~/.ssh directory
+      # user names exist?
+      # no => create ms_user on target box(es)
+      # yes => does have public key? no => request password, login and create public key
+      # put results in ~/.mscache file
+      moonshadow_ssh args, options
     end
+  end
+
+  # "add host --hosts-file --[no]prompt --password"
+  # "add --host "www.example.com" --auth-user "root" --[no]prompt --password"
+
+  def load_capfile(file, cmd_opts = {}, cmd_args = [])
+    require 'capistrano'
+    require 'capistrano/cli'
+    config = Capistrano::Configuration.new
+    config.logger.level = Capistrano::Logger::TRACE
+    config.set :cmd_opts, cmd_opts
+    config.set :cmd_args, cmd_args
+    config.load file
+    config
+  end
+
+  def moonshadow_ssh(args = [], options = {})
+    ssh_rb = File.expand_path(File.join(File.dirname(__FILE__), "../lib/moonshadow/capistrano/ssh_keygen.rb"))
+
+    config = load_capfile(ssh_rb, options.__hash__, args)
+    puts config.task_list(true).inspect
+
+    puts ""
+
   end
 
   require File.join(File.dirname(__FILE__), '../lib/moonshadow/types.rb')
   types = Moonshadow::Type::types
-  puts "types=#{types.inspect}"
+  # puts "types=#{types.inspect}"
 
   recipies = ["nginx_stack","apache_stack"]
 
   command :init do |c|
-    default_name = File.basename(FileUtils.pwd)
+    # default_name = File.basename(File.pwd)
+    default_name = File.basename(Dir.pwd)
     default_user = 'moonshadow'
     c.syntax = 'moonshadow init [options]'
     c.description = 'Initialize current working directory with moonshadow configuration file'
@@ -35,8 +85,10 @@ require 'rubygems'
     c.option "--type [#{types.join('|')}]", String, "Override application type detection"
     c.option "--recipie [#{recipies.join('|')}]", String, "Recipie to use"
     c.when_called do |args, options|
-      options.default :user => default_user
-      options.default :name => default_name
+      # options.default :user => default_user
+      options.default :user => nil
+      # options.default :name => default_name
+      options.default :name => nil
       options.default :recipie => recipies.first
       
       moonshadow_init args, options.__hash__
@@ -52,20 +104,69 @@ require 'rubygems'
       # add_server options.server if options.server
       # add_servers options.servers if options.servers
       # options.default :servers => default_servers, :suffix => ')'
-      # moonshadow_deploy
+      moonshadow_deploy
+    end
+
+    command :config do |c|
+      c.syntax = 'moonshadow config [opt1=val1, opt2=val2, ...]'
+      c.description = 'Push changes out to remotes'
+      # c.option '--[no-]feature', 'With or without feature'
+      c.option '--global', 'For writing options: write to global ~/.msconfig file rather than the repository .msconfig.'
+      c.option '--defaults', 'Dont start from scratch, try select suitable defaults values for unspecified options.'
+      c.option '--default-ssh-user STRING', String, 'User with ssh access to <server>'
+      c.option '--user STRING', String, 'User with ssh access to <server>'
+      c.option '--ms-user STRING', String, 'Moonshadow Deploy User will be created for remote work'
+      c.option '--add-server STRING', String, 'Server to deploy to'
+      c.option '--default-server STRING', Array, 'List of servers to deploy to'
+      c.option '--init-ms-dir PATH', Array, 'Addiional ms config dir'
+      c.when_called do |args, options|
+        # add_server options.server if options.server
+        # add_servers options.servers if options.servers
+        # options.default :servers => default_servers, :suffix => ')'
+
+        require 'yamldoc'
+        msconfig = AutoYamlDoc.new("~/.msconfig")
+        if options.defaults
+          ;
+        end
+        if options.global
+          msconfig.user ||= options.user
+          msconfig.server ||= options.server
+          msConfig.deploy_user
+        else
+          ;
+        end
+
+      end
     end
   end
 
-
-  require 'rubigen'
-  require 'rubigen/scripts/generate'
-
+  # moonshadow init --type static --trace
   def moonshadow_init(args = [], generator_options = {})
-    source = RubiGen::PathSource.new(:application, File.join(File.dirname(__FILE__), "../app_generators"))
-    RubiGen::Base.reset_sources
-    RubiGen::Base.append_sources source
-    generator_options.merge!(:generator => 'moonshadow')
-    RubiGen::Scripts::Generate.new.run(args, generator_options)
+    # require 'rubigen'
+    # require 'rubigen/scripts/generate'
+    # source = RubiGen::PathSource.new(:application, File.join(File.dirname(__FILE__), "../app_generators"))
+    # RubiGen::Base.reset_sources
+    # RubiGen::Base.append_sources source
+    # generator_options.merge!(:generator => 'moonshadow')
+    # RubiGen::Scripts::Generate.new.run(args, generator_options)
+    require File.expand_path(File.join(File.dirname(__FILE__), "../lib/moonshadow/config/manifest.rb"))
+    MoonshadowGenerator.new(args,generator_options)
   end
+
+  # moonshadow push
+  def moonshadow_deploy(args = [])
+    deploy_rb = File.expand_path(File.join(File.dirname(__FILE__), "../lib/moonshadow/capistrano/deploy.rb"))
+    # system("cap --tasks --file #{deploy_rb}")
+    require 'capistrano/cli'
+    Capistrano::CLI.parse(%W(-vvvv --file #{deploy_rb} --tasks)).execute!
+    puts ""
+  end
+
+# the magic triangle
+#  1) username / ssh keys 
+#  2) Target server to deploy to
+#  3) branch name, <refspec> to publish
+
 
 

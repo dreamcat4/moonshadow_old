@@ -42,4 +42,3 @@
   :use_global_queue: true
 :mysql:
   :innodb_buffer_pool_size: 128M
-  

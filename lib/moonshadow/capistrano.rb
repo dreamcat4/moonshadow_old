@@ -12,12 +12,20 @@ Capistrano::Configuration.instance(:must_exist).load do
 
   #load the moonshadow configuration into
   require 'yaml'
-  hash = YAML.load_file(File.join((ENV['RAILS_ROOT'] || Dir.pwd), 'config', 'moonshadow.yml'))
-  hash.each do |key, value|
+
+  puts Dir.pwd
+  # hash = YAML.load_file(File.join((ENV['RAILS_ROOT'] || Dir.pwd), 'config', 'moonshadow.yml'))
+  # hash = YAML.load_file(File.join(Dir.pwd, 'config', 'moonshadow.yml'))
+  # ac = YAML.load_file(File.join(Dir.pwd, '.msconfig'))
+  # uc = YAML.load_file(File.expand_path('~/.msconfig'))
+  ac = uc = {}
+  # merge with userland ~/.msconfig
+  c = uc.merge ac
+  c.each do |key, value|
     set(key.to_sym, value)
   end
 
-  set :scm, :svn if !! repository =~ /^svn/
+  # set :scm, :svn if !! repository =~ /^svn/
 
   namespace :moonshadow do
 
@@ -60,7 +68,9 @@ Capistrano::Configuration.instance(:must_exist).load do
         run "cd #{latest_release} && RAILS_ENV=#{fetch(:rails_env, 'production')} rake --trace environment"
       end
       ensure_installed
-      sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{ENV['DEPLOY_STAGE']||fetch(:stage,'undefined')} RAILS_ENV=#{fetch(:rails_env, 'production')} shadow_puppet #{latest_release}/app/manifests/#{fetch(:moonshadow_manifest, 'application_manifest')}.rb"
+      sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{ENV['DEPLOY_STAGE']||fetch(:stage,'undefined')} "+
+      "RAILS_ENV=#{fetch(:rails_env, 'production')} "+
+      "shadow_puppet #{latest_release}/app/manifests/#{fetch(:moonshadow_manifest, 'application_manifest')}.rb"
       sudo "touch /var/log/moonshadow_rake.log && cat /var/log/moonshadow_rake.log"
     end
 
@@ -128,13 +138,13 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
     end
 
-    desc "tail application log file"
-    task :log, :roles => :app, :except => {:no_symlink => true} do
-      run "tail -f #{shared_path}/log/#{fetch(:rails_env, "production")}.log" do |channel, stream, data|
-        puts "#{data}"
-        break if stream == :err
-      end
-    end
+    # desc "tail application log file"
+    # task :log, :roles => :app, :except => {:no_symlink => true} do
+    #   run "tail -f #{shared_path}/log/#{fetch(:rails_env, "production")}.log" do |channel, stream, data|
+    #     puts "#{data}"
+    #     break if stream == :err
+    #   end
+    # end
 
     desc "tail vmstat"
     task :vmstat, :roles => [:web, :db] do
@@ -227,12 +237,79 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
   end
 
+
+  # CONFIGURATION
+  # -------------
+  #   set :scm, :git
+  #
+  # Set <tt>:repository</tt> to the path of your Git repo:
+  #
+  #   set :repository, "someuser@somehost:/home/myproject"
+  #
+  # The above two options are required to be set, the ones below are
+  # optional.
+  #
+  # You may set <tt>:branch</tt>, which is the reference to the branch, tag, 
+  # or any SHA1 you are deploying, for example:
+  # 
+  #   set :branch, "origin/master"
+  #
+  # Otherwise, HEAD is assumed.  I strongly suggest you set this.  HEAD is
+  # not always the best assumption.
+  #
+  # The <tt>:scm_command</tt> configuration variable, if specified, will
+  # be used as the full path to the git executable on the *remote* machine:
+  #
+  #   set :scm_command, "/opt/local/bin/git"
+  #
+  # For compatibility with deploy scripts that may have used the 1.x
+  # version of this plugin before upgrading, <tt>:git</tt> is still
+  # recognized as an alias for :scm_command.
+  #
+  # Set <tt>:scm_password</tt> to the password needed to clone your repo
+  # if you don't have password-less (public key) entry:
+  #
+  #   set :scm_password, "my_secret'
+  #
+  # Otherwise, you will be prompted for a password.
+  #
+  # <tt>:scm_passphrase</tt> is also supported.
+
+  # # My config/deploy.rb file:
+  # set :application, "myapp"
+  # set :repository,  "ssh://myserver/git/app.git"
+  # set :deploy_to, "/home/mihai/apps/#{application}"
+  # set :scm, "git"
+  # ssh_options[:paranoid] = false
+  # set :domain, "myserver.net"
+  # role :app, domain
+  # role :web, domain
+  # role :db, domain, :primary => true
+  # default_run_options[:pty] = true
+  # set :user, "mihai"
+  # set :runner, "mihai"
+  # set :use_sudo, false
+  # set :deploy_via, :remote_cache
+  # set :mongrel_port, "3001"
+  
+  
+  # fn determine vcs system. git or bzr
+  # install the relevant vcs
+  
+  # # set the branch to publish or error out
+  # if fetch(:scm).to_s == "git"
+  #   set(:repository, system("git config --get remote.origin.url")) unless fetch(:repository)
+  # elsif fetch(:scm).to_s == "bzr"
+  #   set(:checkout, (fetch(:branch)||"trunk"))
+  # end
+
   namespace :vcs do
     desc "Installs the scm"
     task :install do
       package = case fetch(:scm).to_s
-        when 'svn' then 'subversion'
+        # when 'svn' then 'subversion'
         when 'git' then 'git-core'
+        when 'bzr' then 'bzr'
         else scm.to_s
       end
       sudo "apt-get -qq -y install #{package}"

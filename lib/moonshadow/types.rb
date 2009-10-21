@@ -1,22 +1,4 @@
-require 'dreamcat4-settingslogic'
 
-class Settings < Settingslogic
-
-  ms_user_cfg_file = ".moonshadow"
-  # source "#{Rails.root}/config/application.yml"
-  source File.expand_path("~/#{ms_user_cfg_file}")  
-  # namespace Rails.env
-
-end
-
-puts ""
-puts "Settings"
-config = Settings.new
-# Settings.new(:config1 => 1, :config2 => 2)
-config[:config1] = 1
-config[:config2] = 2
-
-puts ""
 
 module Moonshadow  #:nodoc:
 end
@@ -24,7 +6,8 @@ end
 module Moonshadow::Type
 
   # types wishlist:
-  # merb, sintatra, ldap, python, gitosis
+  # merb, sintatra, ldap, python, gitosis, 
+  # smtp email server, sms server, iphone app server
   
   def self.types
     return @types || init_types
@@ -52,7 +35,7 @@ module Moonshadow::Type
     # puts "#{type_file}"
     require type_file
     type = File.basename(type_file,'.rb')
-    @types << type    
+    @types << type
   end
   
   def self.detect destination_root
@@ -65,12 +48,8 @@ module Moonshadow::Type
   
   def self.select_type types_found
     return types_found.first
+    # return types_found.first || msconfig.default_type
   end
 
 end
-
-
-
-
-
 

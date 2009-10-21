@@ -1,3 +1,9 @@
+
+# The old rails Rake Tasks, which were originally installed as:
+# lib/tasks/moonshadow.rake
+
+# These should be converted into proper ms commands
+
 namespace :moonshadow do
 
   namespace :db do

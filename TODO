@@ -1,2 +1,9 @@
-* Use ActiveSupport::OrderedHash to prevent gems.yml from changing when it
-  really hasn't
+* Create deploy user 'moonshine'
+* Change recipie for static to default_none (nginx)
+* bash script
+* ruby script
+* capfile autogeneration
+* moonshine.yml
+* check for existence of ./.git directory
+
+
