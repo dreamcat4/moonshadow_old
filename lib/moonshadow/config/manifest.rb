@@ -8,6 +8,15 @@ class String
   end
 end
 
+class File
+  class << self
+    def gsub!(file, regexp, *args, &block)
+      content = File.read(file).gsub(regexp, *args, &block)
+      File.open(file, 'wb') { |f| f.write(content) }
+    end
+  end
+end
+
 class MoonshadowGenerator
   attr_reader :file_name
 
@@ -76,18 +85,15 @@ class MoonshadowGenerator
     end
 
     Dir.glob(File.join(app_msdir,'**')).each do |file|
-      if file =~ /.*\.rb/ && File.read(file) =~ /Manifest/mi
+      # if file =~ /.*\.rb/ && File.read(file) =~ /class.*Manifest/
+      if file =~ /.*\.rb/ && File.read(file) =~ /class.*(Moonshine|ShadowPuppet)::Manifest/
       # if file =~ /.*\.rb$/
-        gsub_file file, /^gem 'moonshadow'.*$/, @msconfig.moonshadow_gem_string
+        File.gsub! file, /^gem 'moonshadow'.*$/, @msconfig.moonshadow_gem_string
       end        
     end
 
   end
 
-  def gsub_file(file, regexp, *args, &block)
-    content = File.read(file).gsub(regexp, *args, &block)
-    File.open(file, 'wb') { |f| f.write(content) }
-  end
 
 end
 

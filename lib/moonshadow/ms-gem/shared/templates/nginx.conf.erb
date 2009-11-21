@@ -1,0 +1,45 @@
+
+user <%= nginx_conf['user'] %> <%= nginx_conf['group'] %>;
+worker_processes  <%= host_cpus %>;
+
+error_log  <%= nginx_conf['error-log-path'] %>;
+pid        <%= nginx_conf['pid-path'] %>;
+
+events {
+    worker_connections  <%= host_speed.to_i %>;
+}
+
+http {
+    passenger_root <%= passenger_root %>;
+    passenger_ruby <%= passenger_ruby %>;
+	
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+	
+	# configure log format
+	log_format  main  '$remote_addr - $remote_user [$time_local] $status '
+                		'"$request" $body_bytes_sent "$http_referer" '
+                		'"$http_user_agent" "http_x_forwarded_for"';
+	
+    access_log	<%= nginx_conf['http-log-path'] %>;
+	
+    sendfile        on;
+    #keepalive_timeout  0;
+    keepalive_timeout  <%= keepalive_timeout %>;
+	
+	# These are good default values.
+	server_names_hash_bucket_size 64;
+	tcp_nopush        on;
+	tcp_nodelay       off;
+	# output compression saves bandwidth 
+	gzip            on;
+	gzip_http_version 1.0;
+	gzip_buffers 16 8k;
+	gzip_comp_level 2;
+	gzip_proxied any;
+	gzip_types      text/plain text/html text/css application/x-javascript text/xml application/xml 
+	                 application/xml+rss text/javascript;
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}

@@ -1,5 +1,5 @@
 
-module Moonshadow::Type::Static
+module Moonshadow::Type::Web
 
   def self.detect dir
 

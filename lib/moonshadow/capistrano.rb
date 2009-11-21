@@ -41,14 +41,14 @@ Capistrano::Configuration.instance(:must_exist).load do
 
     task :setup_directories do
       begin
-        config = YAML.load_file(File.join(Dir.pwd, 'config', 'moonshadow.yml'))
-        put(YAML.dump(config),"/tmp/moonshadow.yml")
+        config = File.join(Dir.pwd, 'config', 'moonshadow.yml')
+        upload(config,"/tmp/moonshadow.yml")
       rescue Exception => e
         puts e
         puts "Please make sure the settings in moonshadow.yml are valid and that the target hostname is correct."
         exit(0)
       end
-      put(File.read(File.join(File.dirname(__FILE__), '..', 'moonshadow_setup_manifest.rb')),"/tmp/moonshadow_setup_manifest.rb")
+      upload(File.join(File.dirname(__FILE__), '..', 'moonshadow_setup_manifest.rb'),"/tmp/moonshadow_setup_manifest.rb")
       sudo "shadow_puppet /tmp/moonshadow_setup_manifest.rb"
       sudo 'rm /tmp/moonshadow_setup_manifest.rb'
       sudo 'rm /tmp/moonshadow.yml'
@@ -70,7 +70,9 @@ Capistrano::Configuration.instance(:must_exist).load do
       ensure_installed
       sudo "RAILS_ROOT=#{latest_release} DEPLOY_STAGE=#{ENV['DEPLOY_STAGE']||fetch(:stage,'undefined')} "+
       "RAILS_ENV=#{fetch(:rails_env, 'production')} "+
+
       "shadow_puppet #{latest_release}/app/manifests/#{fetch(:moonshadow_manifest, 'application_manifest')}.rb"
+
       sudo "touch /var/log/moonshadow_rake.log && cat /var/log/moonshadow_rake.log"
     end
 

@@ -1,0 +1,312 @@
+
+
+<% Array(config['sites']).each do |name, site| %>
+  <% next unless site['upstream'] %>
+  upstream <%= name %> {
+  <% if site['fair'] %>
+    fair;
+  <% end %>
+  <% Array(site['upstream'] || site['upstreams']).each do |server| %>
+    server <%= server %>;
+  <% end %>
+  }
+<% end %>
+
+<% %w(sites ssl_sites).each do |site_type| %>
+	
+<% Array(config[site_type]).each do |name, site| %>
+  # the server directive is nginx's virtual host directive.
+  server {
+    
+
+<% if site['listen'] %>
+    listen		<%= site['listen'] %>;
+<% else %>    
+    listen		443;
+<% end %>
+    ssl on;
+    
+	# path to your certificate
+	ssl_certificate <%= site['ssl']['cert'] %>;
+  	
+	# path to your ssl key
+	ssl_certificate_key <%= site['ssl']['key'] %>;
+  	
+<% else %>
+	
+    # port to listen on. Can also be set to an IP:PORT
+    listen       80;
+
+    # sets the domain[s] that this vhost server requests for
+    server_name  <%= site['server_name'] %>;
+    
+<% end %>
+    
+    # doc root
+    root <%= (config['root'][ site['root'] || 'default' ] || site['root']) % name %>;
+
+    # vhost specific access log
+    access_log  logs/<%= name %>.access.log  main;
+
+    #Set the max size for file uploads to 50Mb
+    client_max_body_size  50M;
+
+    # this rewrites all the requests to the maintenance.html
+    # page if it exists in the doc root. This is for capistrano's
+    # disable web task
+    if (-f $document_root/system/maintenance.html) {
+      rewrite  ^(.*)$  /system/maintenance.html last;
+      break;
+    }
+
+<% if site['no_www'] %>
+    if ($host ~* "www") {
+      rewrite ^(.*)$ http://<%= site['server_name'].split.first.sub(/^\./, '') %>$1 permanent;
+      break;
+    }
+<% end %>
+
+<% if site['always_www'] %>
+    if ($host != "www.<%= site['server_name'].split.first %>") {
+      rewrite ^(.*)$ http://www.<%= site['server_name'].split.first %>$1 permanent;
+      break;
+    }
+<% end %>
+
+    location / {
+<% Array(site['rewrite'] || site['rewrites']).each do |rewrite| %>
+      rewrite <%= rewrite %> break;
+<% end %>
+
+<% Array(site['feed'] || site['feeds']).each do |feed_rewrite| %>
+    if ($http_user_agent !~ FeedBurner) {
+      rewrite <%= feed_rewrite %> break;
+    }
+<% end %>
+
+<% if site['auth_file'] %>
+      auth_basic            "<%= name %> requires credentials.";
+      auth_basic_user_file  <%= site['auth_file'] %>;
+<% end %>
+
+      # needed to forward user's IP address to rails
+      proxy_set_header  X-Real-IP  $remote_addr;
+
+      # needed for HTTPS
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect false;
+      proxy_max_temp_file_size 0;
+<% if site['ssl'] %>
+      # set X-FORWARDED_PROTO so ssl_requirement plugin works
+      proxy_set_header X-FORWARDED_PROTO https;
+<% end %>
+
+      # If the file exists as a static file serve it directly without
+      # running all the other rewite tests on it
+      if (-f $request_filename) {
+        break;
+      }
+
+      # check for index.html for directory index
+      # if its there on the filesystem then rewite 
+      # the url to add /index.html to the end of it
+      # and then break to send it to the next config rules.
+      if (-f $request_filename/index.html) {
+        rewrite (.*) $1/index.html break;
+      }
+
+      # this is the meat of the rails page caching config
+      # it adds .html to the end of the url and then checks
+      # the filesystem for that file. If it exists, then we
+      # rewite the url to have explicit .html on the end 
+      # and then send it on its way to the next config rule.
+      # if there is no file on the fs then it sets all the 
+      # necessary headers and proxies to our upstream mongrels
+      if (-f $request_filename.html) {
+        rewrite (.*) $1.html break;
+      }
+
+<% if site['upstream'] %>
+      if (!-f $request_filename) {
+        proxy_pass http://<%= name %>;
+        break;
+      }
+<% end %>
+
+<% if site['passenger_enabled'] %>
+	  passenger_enabled on;
+<% end %>
+
+<% if site['rails_env'] %>
+	  rails_env <% site['rails_env'] %>;
+<% end %>
+    }
+
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+      root   html;
+    }
+    
+<% Array(site['location'] || site['locations']).each do |path, setting| %>
+    location = <%= path %> {
+      <%= setting %>
+    }
+<% end %>
+
+  }
+<% end %>
+<% end %>
+}
+
+
+#######################################################################################################
+
+# server {
+# 	listen       80;
+# 	server_name  localhost;
+# 	autoindex on;
+# }
+
+server {
+	listen 3001;
+	server_name localhost;
+	root /Users/id/tmp/potionstore/public;   # <--- be sure to point to 'public'!
+	passenger_enabled on;
+	rails_env development;
+}
+
+server {
+	server_name <%= configuration[:domain] || `hostname -f` %>;
+	root <%= configuration[:deploy_to] + "/current/public" %>;   # <--- be sure to point to 'public'!
+	passenger_enabled on;
+	rails_env development;
+}
+
+<% if configuration[:domain_aliases] %>
+ServerAlias <%= configuration[:domain_aliases].to_a.join(' ') %>
+<% end %>
+
+
+#######################################################################################################
+# ssl
+#######################################################################################################
+<% unless configuration[:ssl] && configuration[:ssl][:only] %>
+	listen               80;
+<% end %>
+
+<% if configuration[:ssl] %>
+	listen              443;
+	ssl                  on;
+	ssl_session_timeout  5m;
+
+	# if you have a chain certificate file (sometimes called an intermediate certificate) you don't specify it
+	# separately like you do in Apache. Instead you need to add the information from the chain cert to the end
+	# of your main certificate file. This can be done by typing "cat chain.crt >> mysite.com.crt" on the
+	# command line. Once that is done you won't use the chain cert file for anything else, you just point Nginx
+	# to the main certificate file.
+	ssl_certificate      <%= configuration[:ssl][:certificate_file] %>; # .pem or .crt
+	ssl_certificate_key  <%= configuration[:ssl][:certificate_key_file] %>; # .key
+
+	proxy_set_header X-FORWARDED_PROTO https;
+	ssl_protocols  SSLv2 SSLv3 TLSv1;
+	ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+	ssl_prefer_server_ciphers   on;
+
+<% else %>
+<% end %>
+
+
+
+<VirtualHost <%= configuration[:ssl][:ip] || '_default_' %>:443>
+
+<% if configuration[:ssl] %>
+  <%= configuration[:ssl][:vhost_extra] %>
+<% else %>
+  <%= configuration[:passenger][:vhost_extra] %>
+<% end %>
+
+#######################################################################################################
+location / {
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header Host $http_host;
+proxy_set_header X-FORWARDED_PROTO https;
+proxy_redirect off;
+}
+#######################################################################################################
+
+server {
+    listen       80;
+    server_name  localhost;
+# autoindex on;
+
+
+    #charset koi8-r;
+
+    #access_log  logs/host.access.log  main;
+
+    location / {
+        root   html;
+        index  index.html index.htm;
+# index  index.html index.htm readme.html readme.htm;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+
+
+# another virtual host using mix of IP-, name-, and port-based configuration
+#
+#server {
+#    listen       8000;
+#    listen       somename:8080;
+#    server_name  somename  alias  another.alias;
+
+#    location / {
+#        root   html;
+#        index  index.html index.htm;
+#    }
+#}
+
+
+# HTTPS server
+#
+#server {
+#    server_name  localhost;
+
+#    location / {
+#        root   html;
+#        index  index.html index.htm;
+#    }
+#}
+

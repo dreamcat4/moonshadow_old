@@ -12,6 +12,8 @@ set :ms_user, "dreamcat4"
 # set :hosts, ["#{admin_user}@#{remoteHost}"]
 set :hosts, ["ubuntu910server"]
 
+ssh_options[:keys] = %w(~/.ssh/id_dsa ~/.ssh/id_rsa)
+
 # puts ssh_rb.inspect
 puts cmd_args.inspect
 # puts somehash.inspect
